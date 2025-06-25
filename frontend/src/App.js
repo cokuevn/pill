@@ -745,6 +745,22 @@ function App() {
           const registration = await navigator.serviceWorker.register('/sw.js');
           console.log('✅ SW registered successfully:', registration);
           
+          // Handle SW updates
+          registration.addEventListener('updatefound', () => {
+            const newWorker = registration.installing;
+            newWorker.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                // New update available
+                if ('Notification' in window && Notification.permission === 'granted') {
+                  new Notification('App Updated! 🎉', {
+                    body: 'New features and improvements available. Refresh to see changes!',
+                    icon: '/icon-192.png'
+                  });
+                }
+              }
+            });
+          });
+          
           // Handle service worker messages
           navigator.serviceWorker.addEventListener('message', (event) => {
             if (event.data.type === 'PILL_TAKEN') {

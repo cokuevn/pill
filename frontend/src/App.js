@@ -991,6 +991,19 @@ function App() {
               >
                 🤖
               </button>
+              {!isPremium && (
+                <button
+                  onClick={() => setShowProModal(true)}
+                  className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
+                >
+                  ⭐ PRO
+                </button>
+              )}
+              {isPremium && (
+                <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs rounded-full font-medium">
+                  ✨ PRO
+                </div>
+              )}
               <button
                 onClick={() => setShowSettingsModal(true)}
                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"

@@ -4,8 +4,7 @@ import './App.css';
 // Data storage utilities
 const STORAGE_KEYS = {
   PILLS: 'pill_reminder_pills',
-  TAKEN_TODAY: 'pill_reminder_taken_today',
-  PREMIUM: 'pill_reminder_premium'
+  TAKEN_TODAY: 'pill_reminder_taken_today'
 };
 
 // Pill data model
@@ -40,7 +39,6 @@ const storage = {
 // PWA Status Component
 const PWAStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
-  const [isInstalled, setIsInstalled] = useState(false);
 
   useEffect(() => {
     const handleOnline = () => setIsOnline(true);
@@ -48,11 +46,6 @@ const PWAStatus = () => {
 
     window.addEventListener('online', handleOnline);
     window.addEventListener('offline', handleOffline);
-
-    // Check if PWA is installed
-    if (window.matchMedia('(display-mode: standalone)').matches) {
-      setIsInstalled(true);
-    }
 
     return () => {
       window.removeEventListener('online', handleOnline);
@@ -72,7 +65,7 @@ const PWAStatus = () => {
 };
 
 // Add Pill Modal Component
-const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
+const AddPillModal = ({ isOpen, onClose, onAdd }) => {
   const [name, setName] = useState('');
   const [time, setTime] = useState('09:00');
   const [days, setDays] = useState([]);
@@ -98,12 +91,6 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || days.length === 0) return;
-    
-    // Check limit for free version
-    if (!isPremium && pillCount >= 3) {
-      alert('Free version supports maximum 3 medications. Upgrade to PRO!');
-      return;
-    }
 
     const pill = createPill(name.trim(), time, days);
     onAdd(pill);
@@ -192,24 +179,6 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
             )}
           </div>
 
-          {/* Free version limit */}
-          {!isPremium && pillCount >= 2 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-amber-600">⚠️</span>
-                <div>
-                  <p className="text-amber-800 text-sm font-medium">
-                    Free Version Limit
-                  </p>
-                  <p className="text-amber-700 text-xs">
-                    You have {pillCount} of 3 available medications.
-                    {pillCount >= 3 && ' Upgrade to PRO for unlimited!'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button
@@ -234,8 +203,9 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
 };
 
 // Pill Item Component
-const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
+const PillItem = ({ pill, isTaken, onTake, onDelete }) => {
   const [isAnimating, setIsAnimating] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
 
   const handleTake = () => {
     setIsAnimating(true);
@@ -243,6 +213,13 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
       onTake(pill.id);
       setIsAnimating(false);
     }, 300);
+  };
+
+  const handleDelete = () => {
+    if (window.confirm(`Delete ${pill.name}?`)) {
+      onDelete(pill.id);
+    }
+    setShowOptions(false);
   };
 
   return (
@@ -270,6 +247,26 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
         </div>
         
         <div className="flex items-center space-x-2">
+          {/* Options button */}
+          <div className="relative">
+            <button
+              onClick={() => setShowOptions(!showOptions)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+            >
+              ⋯
+            </button>
+            {showOptions && (
+              <div className="absolute right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg z-10 min-w-[120px]">
+                <button
+                  onClick={handleDelete}
+                  className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 rounded-xl transition-colors"
+                >
+                  Delete
+                </button>
+              </div>
+            )}
+          </div>
+
           {isTaken ? (
             <div className="flex items-center text-green-600">
               <div className="w-8 h-8 bg-green-100 rounded-full flex items-center justify-center">
@@ -290,67 +287,86 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
   );
 };
 
-// PRO Modal Component
-const ProModal = ({ isOpen, onClose, onUpgrade }) => {
+// Settings Modal Component
+const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  const handleClearData = () => {
+    if (showConfirm) {
+      onClearData();
+      setShowConfirm(false);
+      onClose();
+    } else {
+      setShowConfirm(true);
+    }
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-slide-up">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⭐</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to PRO</h2>
-          <p className="text-gray-600 mb-6">Unlock unlimited medications and advanced features</p>
-          
-          <div className="space-y-4 mb-6 text-left">
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Unlimited medications</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Medication history & analytics</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Ad-free experience</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Advanced reminders</span>
+        <div className="flex justify-between items-center mb-6">
+          <h2 className="text-xl font-bold text-gray-900">⚙️ Settings</h2>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        <div className="space-y-6">
+          {/* App Info */}
+          <div className="bg-gray-50 rounded-xl p-4">
+            <h3 className="font-medium text-gray-900 mb-2">App Information</h3>
+            <div className="space-y-1 text-sm text-gray-600">
+              <p>Total Medications: {pillCount}</p>
+              <p>Version: 1.0.0</p>
+              <p>Storage: Local (offline-ready)</p>
             </div>
           </div>
-          
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
-            <div className="text-3xl font-bold text-blue-600">
-              $2.99<span className="text-sm font-normal text-gray-500">/month</span>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Cancel anytime</p>
-          </div>
-          
+
+          {/* Actions */}
           <div className="space-y-3">
-            <button
-              onClick={onUpgrade}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 font-medium transition-all transform hover:scale-105"
-            >
-              🚀 Upgrade to PRO
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Maybe later
-            </button>
+            <div className="border-t pt-4">
+              <h3 className="font-medium text-gray-900 mb-3">Data Management</h3>
+              <button
+                onClick={handleClearData}
+                className={`w-full px-4 py-3 rounded-xl font-medium transition-all ${
+                  showConfirm 
+                    ? 'bg-red-500 text-white hover:bg-red-600' 
+                    : 'bg-red-50 text-red-600 hover:bg-red-100'
+                }`}
+              >
+                {showConfirm ? 'Confirm: Delete All Data' : 'Clear All Data'}
+              </button>
+              {showConfirm && (
+                <p className="text-xs text-red-600 mt-2">
+                  This will delete all your medications and history. This cannot be undone.
+                </p>
+              )}
+            </div>
+          </div>
+
+          {/* Future monetization placeholder */}
+          <div className="bg-blue-50 rounded-xl p-4">
+            <h3 className="font-medium text-blue-900 mb-2">🚀 Coming Soon</h3>
+            <div className="space-y-1 text-sm text-blue-700">
+              <p>• Advanced analytics</p>
+              <p>• Medication history</p>
+              <p>• Custom reminders</p>
+              <p>• Export data</p>
+            </div>
           </div>
         </div>
+
+        <button
+          onClick={onClose}
+          className="w-full mt-6 px-4 py-3 bg-gray-100 text-gray-700 rounded-xl hover:bg-gray-200 font-medium transition-colors"
+        >
+          Close
+        </button>
       </div>
     </div>
   );
@@ -360,9 +376,8 @@ const ProModal = ({ isOpen, onClose, onUpgrade }) => {
 function App() {
   const [pills, setPills] = useState([]);
   const [takenToday, setTakenToday] = useState({});
-  const [isPremium, setIsPremium] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
-  const [showProModal, setShowProModal] = useState(false);
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
 
   // Check URL parameters for shortcuts
   useEffect(() => {
@@ -376,11 +391,9 @@ function App() {
   useEffect(() => {
     const savedPills = storage.get(STORAGE_KEYS.PILLS) || [];
     const savedTaken = storage.get(STORAGE_KEYS.TAKEN_TODAY) || {};
-    const savedPremium = storage.get(STORAGE_KEYS.PREMIUM) || false;
     
     setPills(savedPills);
     setTakenToday(savedTaken);
-    setIsPremium(savedPremium);
   }, []);
 
   // Register Service Worker
@@ -434,6 +447,31 @@ function App() {
     }
   };
 
+  // Delete pill
+  const deletePill = (pillId) => {
+    const newPills = pills.filter(pill => pill.id !== pillId);
+    setPills(newPills);
+    storage.set(STORAGE_KEYS.PILLS, newPills);
+
+    // Remove from taken today
+    const newTaken = { ...takenToday };
+    Object.keys(newTaken).forEach(key => {
+      if (key.endsWith(`_${pillId}`)) {
+        delete newTaken[key];
+      }
+    });
+    setTakenToday(newTaken);
+    storage.set(STORAGE_KEYS.TAKEN_TODAY, newTaken);
+  };
+
+  // Clear all data
+  const clearAllData = () => {
+    setPills([]);
+    setTakenToday({});
+    storage.set(STORAGE_KEYS.PILLS, []);
+    storage.set(STORAGE_KEYS.TAKEN_TODAY, {});
+  };
+
   // Mark pill as taken
   const takePill = (pillId) => {
     const today = new Date().toDateString();
@@ -485,22 +523,6 @@ function App() {
     }
   };
 
-  // Upgrade to PRO
-  const upgradeToPro = () => {
-    // Here will be Google Play Billing integration
-    setIsPremium(true);
-    storage.set(STORAGE_KEYS.PREMIUM, true);
-    setShowProModal(false);
-    
-    // Show success notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Welcome to PRO! 🎉', {
-        body: 'You now have unlimited access to all features!',
-        icon: '/manifest-icon-192.maskable.png'
-      });
-    }
-  };
-
   const todaysPills = getTodaysPills();
 
   return (
@@ -523,21 +545,13 @@ function App() {
                 })}
               </p>
             </div>
-            <div className="flex items-center space-x-3">
-              {!isPremium && (
-                <button
-                  onClick={() => setShowProModal(true)}
-                  className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
-                >
-                  ⭐ PRO
-                </button>
-              )}
-              {isPremium && (
-                <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs rounded-full font-medium">
-                  ✨ PRO
-                </div>
-              )}
-            </div>
+            <button
+              onClick={() => setShowSettingsModal(true)}
+              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+              title="Settings"
+            >
+              ⚙️
+            </button>
           </div>
         </div>
       </header>
@@ -581,11 +595,51 @@ function App() {
                   pill={pill}
                   isTaken={isPillTaken(pill.id)}
                   onTake={takePill}
+                  onDelete={deletePill}
                 />
               ))}
             </div>
           )}
         </div>
+
+        {/* All Medications */}
+        {pills.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-lg font-semibold text-gray-900 mb-4">
+              All Medications ({pills.length})
+            </h2>
+            <div className="space-y-3">
+              {pills.map(pill => {
+                const dayNames = {
+                  0: 'Sun', 1: 'Mon', 2: 'Tue', 3: 'Wed', 
+                  4: 'Thu', 5: 'Fri', 6: 'Sat'
+                };
+                const daysText = pill.days.map(d => dayNames[d]).join(', ');
+                
+                return (
+                  <div key={pill.id} className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="text-2xl">{pill.icon}</div>
+                        <div>
+                          <h3 className="font-medium text-gray-900">{pill.name}</h3>
+                          <p className="text-sm text-gray-500">🕐 {pill.time} • {daysText}</p>
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => deletePill(pill.id)}
+                        className="p-2 text-gray-400 hover:text-red-500 transition-colors"
+                        title="Delete medication"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
 
         {/* Stats */}
         <div className="bg-white rounded-2xl p-4 mb-6 shadow-sm">
@@ -609,24 +663,6 @@ function App() {
             </div>
           </div>
         </div>
-
-        {/* AdMob Banner Placeholder */}
-        {!isPremium && pills.length > 0 && (
-          <div className="bg-gray-100 rounded-xl p-4 mb-6 text-center border-2 border-dashed border-gray-300">
-            <div className="text-gray-500 text-sm font-medium mb-1">
-              📢 Advertisement
-            </div>
-            <div className="text-xs text-gray-400">
-              Support us by viewing ads or upgrade to PRO to remove them
-            </div>
-            <button
-              onClick={() => setShowProModal(true)}
-              className="mt-2 px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 transition-colors"
-            >
-              Remove Ads
-            </button>
-          </div>
-        )}
       </main>
 
       {/* Add Button */}
@@ -643,14 +679,13 @@ function App() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={addPill}
-        isPremium={isPremium}
-        pillCount={pills.length}
       />
 
-      <ProModal
-        isOpen={showProModal}
-        onClose={() => setShowProModal(false)}
-        onUpgrade={upgradeToPro}
+      <SettingsModal
+        isOpen={showSettingsModal}
+        onClose={() => setShowSettingsModal(false)}
+        onClearData={clearAllData}
+        pillCount={pills.length}
       />
     </div>
   );

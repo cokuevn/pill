@@ -727,6 +727,8 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
 
 // PRO Modal Component
 const ProModal = ({ isOpen, onClose, onUpgrade }) => {
+  console.log('ProModal render:', { isOpen }); // Debug
+  
   if (!isOpen) return null;
 
   return (

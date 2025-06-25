@@ -934,14 +934,22 @@ function App() {
     }
   };
 
-  // Clear all data
-  const clearAllData = () => {
-    setPills([]);
-    setTakenToday({});
-    storage.set(STORAGE_KEYS.PILLS, []);
-    storage.set(STORAGE_KEYS.TAKEN_TODAY, {});
-    // Clear AI session too
-    localStorage.removeItem(STORAGE_KEYS.AI_SESSION);
+  // Clear all data with IndexedDB
+  const clearAllData = async () => {
+    try {
+      // Clear IndexedDB
+      await storage.clearAllData();
+      
+      // Update state
+      setPills([]);
+      setTakenToday({});
+      setIsPremium(false);
+      
+      console.log('✅ All data cleared from IndexedDB');
+    } catch (error) {
+      console.error('❌ Error clearing data:', error);
+      alert('Error clearing data. Please try again.');
+    }
   };
 
   // Upgrade to PRO

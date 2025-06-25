@@ -1,24 +1,24 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
-// Утилиты для работы с данными
+// Data storage utilities
 const STORAGE_KEYS = {
   PILLS: 'pill_reminder_pills',
   TAKEN_TODAY: 'pill_reminder_taken_today',
   PREMIUM: 'pill_reminder_premium'
 };
 
-// Модель данных для лекарства
+// Pill data model
 const createPill = (name, time, days, icon = '💊') => ({
   id: Date.now() + Math.random(),
   name,
-  time, // формат "HH:MM"
-  days, // массив чисел 0-6 (0 = воскресенье)
+  time, // format "HH:MM"
+  days, // array of numbers 0-6 (0 = Sunday)
   icon,
   createdAt: new Date().toISOString()
 });
 
-// Утилиты для локального хранения
+// Local storage utilities
 const storage = {
   get: (key) => {
     try {
@@ -37,20 +37,20 @@ const storage = {
   }
 };
 
-// Компонент добавления лекарства
+// Add Pill Modal Component
 const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
   const [name, setName] = useState('');
   const [time, setTime] = useState('09:00');
   const [days, setDays] = useState([]);
   
   const weekDays = [
-    { id: 1, name: 'Пн', fullName: 'Понедельник' },
-    { id: 2, name: 'Вт', fullName: 'Вторник' },
-    { id: 3, name: 'Ср', fullName: 'Среда' },
-    { id: 4, name: 'Чт', fullName: 'Четверг' },
-    { id: 5, name: 'Пт', fullName: 'Пятница' },
-    { id: 6, name: 'Сб', fullName: 'Суббота' },
-    { id: 0, name: 'Вс', fullName: 'Воскресенье' }
+    { id: 1, name: 'Mon', fullName: 'Monday' },
+    { id: 2, name: 'Tue', fullName: 'Tuesday' },
+    { id: 3, name: 'Wed', fullName: 'Wednesday' },
+    { id: 4, name: 'Thu', fullName: 'Thursday' },
+    { id: 5, name: 'Fri', fullName: 'Friday' },
+    { id: 6, name: 'Sat', fullName: 'Saturday' },
+    { id: 0, name: 'Sun', fullName: 'Sunday' }
   ];
 
   const toggleDay = (dayId) => {
@@ -65,16 +65,16 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
     e.preventDefault();
     if (!name.trim() || days.length === 0) return;
     
-    // Проверка лимита для бесплатной версии
+    // Check limit for free version
     if (!isPremium && pillCount >= 3) {
-      alert('Бесплатная версия поддерживает максимум 3 лекарства. Обновитесь до PRO!');
+      alert('Free version supports maximum 3 medications. Upgrade to PRO!');
       return;
     }
 
     const pill = createPill(name.trim(), time, days);
     onAdd(pill);
     
-    // Сброс формы
+    // Reset form
     setName('');
     setTime('09:00');
     setDays([]);
@@ -87,7 +87,7 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
       <div className="bg-white rounded-2xl p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Добавить лекарство</h2>
+          <h2 className="text-xl font-bold text-gray-900">Add Medication</h2>
           <button
             onClick={onClose}
             className="text-gray-400 hover:text-gray-600 text-2xl"
@@ -97,25 +97,25 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-6">
-          {/* Название лекарства */}
+          {/* Medication name */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Название лекарства
+              Medication Name
             </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Например: Витамин D"
+              placeholder="e.g., Vitamin D"
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               required
             />
           </div>
 
-          {/* Время приема */}
+          {/* Time */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">
-              Время приема
+              Time to Take
             </label>
             <input
               type="time"
@@ -126,10 +126,10 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
             />
           </div>
 
-          {/* Дни недели */}
+          {/* Days of week */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-3">
-              Дни приема
+              Days to Take
             </label>
             <div className="grid grid-cols-7 gap-2">
               {weekDays.map(day => (
@@ -149,31 +149,31 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
             </div>
           </div>
 
-          {/* Лимит бесплатной версии */}
+          {/* Free version limit */}
           {!isPremium && pillCount >= 2 && (
             <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
               <p className="text-amber-800 text-sm">
-                У вас {pillCount} из 3 доступных лекарств в бесплатной версии.
-                {pillCount >= 3 && ' Обновитесь до PRO для неограниченного количества!'}
+                You have {pillCount} of 3 available medications in the free version.
+                {pillCount >= 3 && ' Upgrade to PRO for unlimited medications!'}
               </p>
             </div>
           )}
 
-          {/* Кнопки */}
+          {/* Buttons */}
           <div className="flex gap-3">
             <button
               type="button"
               onClick={onClose}
               className="flex-1 px-4 py-3 text-gray-700 bg-gray-100 rounded-xl hover:bg-gray-200 font-medium"
             >
-              Отмена
+              Cancel
             </button>
             <button
               type="submit"
               disabled={!name.trim() || days.length === 0}
               className="flex-1 px-4 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed font-medium"
             >
-              Добавить
+              Add
             </button>
           </div>
         </form>
@@ -182,7 +182,7 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
   );
 };
 
-// Компонент элемента лекарства
+// Pill Item Component
 const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
   return (
     <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100">
@@ -198,7 +198,7 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
         <div className="flex items-center space-x-2">
           {isTaken ? (
             <div className="flex items-center text-green-600">
-              <span className="text-sm font-medium">Принято</span>
+              <span className="text-sm font-medium">Taken</span>
               <div className="ml-2 w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-green-600 text-xs">✓</span>
               </div>
@@ -208,7 +208,7 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
               onClick={() => onTake(pill.id)}
               className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 text-sm font-medium"
             >
-              Принято
+              Take
             </button>
           )}
         </div>
@@ -217,7 +217,7 @@ const PillItem = ({ pill, isTaken, onTake, onEdit, onDelete }) => {
   );
 };
 
-// Компонент PRO modal
+// PRO Modal Component
 const ProModal = ({ isOpen, onClose, onUpgrade }) => {
   if (!isOpen) return null;
 
@@ -226,38 +226,38 @@ const ProModal = ({ isOpen, onClose, onUpgrade }) => {
       <div className="bg-white rounded-2xl p-6 w-full max-w-md">
         <div className="text-center">
           <div className="text-4xl mb-4">⭐</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Обновиться до PRO</h2>
-          <p className="text-gray-600 mb-6">Получите полный доступ ко всем функциям</p>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to PRO</h2>
+          <p className="text-gray-600 mb-6">Get full access to all features</p>
           
           <div className="space-y-3 mb-6 text-left">
             <div className="flex items-center space-x-3">
               <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-green-600 text-xs">✓</span>
               </div>
-              <span className="text-gray-700">Неограниченное количество лекарств</span>
+              <span className="text-gray-700">Unlimited medications</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-green-600 text-xs">✓</span>
               </div>
-              <span className="text-gray-700">История приема лекарств</span>
+              <span className="text-gray-700">Medication history</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-green-600 text-xs">✓</span>
               </div>
-              <span className="text-gray-700">Без рекламы</span>
+              <span className="text-gray-700">Ad-free experience</span>
             </div>
             <div className="flex items-center space-x-3">
               <div className="w-5 h-5 bg-green-100 rounded-full flex items-center justify-center">
                 <span className="text-green-600 text-xs">✓</span>
               </div>
-              <span className="text-gray-700">Расширенная аналитика</span>
+              <span className="text-gray-700">Advanced analytics</span>
             </div>
           </div>
           
           <div className="text-3xl font-bold text-blue-600 mb-6">
-            299 ₽<span className="text-sm font-normal text-gray-500">/месяц</span>
+            $2.99<span className="text-sm font-normal text-gray-500">/month</span>
           </div>
           
           <div className="space-y-3">
@@ -265,13 +265,13 @@ const ProModal = ({ isOpen, onClose, onUpgrade }) => {
               onClick={onUpgrade}
               className="w-full px-6 py-3 bg-blue-500 text-white rounded-xl hover:bg-blue-600 font-medium"
             >
-              Обновиться до PRO
+              Upgrade to PRO
             </button>
             <button
               onClick={onClose}
               className="w-full px-6 py-3 text-gray-500 hover:text-gray-700"
             >
-              Не сейчас
+              Not now
             </button>
           </div>
         </div>
@@ -280,7 +280,7 @@ const ProModal = ({ isOpen, onClose, onUpgrade }) => {
   );
 };
 
-// Главный компонент приложения
+// Main App Component
 function App() {
   const [pills, setPills] = useState([]);
   const [takenToday, setTakenToday] = useState({});
@@ -288,7 +288,7 @@ function App() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showProModal, setShowProModal] = useState(false);
 
-  // Загрузка данных при запуске
+  // Load data on startup
   useEffect(() => {
     const savedPills = storage.get(STORAGE_KEYS.PILLS) || [];
     const savedTaken = storage.get(STORAGE_KEYS.TAKEN_TODAY) || {};
@@ -299,7 +299,7 @@ function App() {
     setIsPremium(savedPremium);
   }, []);
 
-  // Регистрация Service Worker
+  // Register Service Worker
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js')
@@ -307,29 +307,29 @@ function App() {
         .catch(() => console.log('SW registration failed'));
     }
     
-    // Запрос разрешения на уведомления
+    // Request notification permission
     if ('Notification' in window && Notification.permission === 'default') {
       Notification.requestPermission();
     }
   }, []);
 
-  // Получение лекарств на сегодня
+  // Get today's pills
   const getTodaysPills = () => {
     const today = new Date().getDay();
     return pills.filter(pill => pill.days.includes(today));
   };
 
-  // Добавление лекарства
+  // Add pill
   const addPill = (pill) => {
     const newPills = [...pills, pill];
     setPills(newPills);
     storage.set(STORAGE_KEYS.PILLS, newPills);
     
-    // Планирование уведомлений
+    // Schedule notifications
     scheduleNotifications(pill);
   };
 
-  // Отметка лекарства как принятого
+  // Mark pill as taken
   const takePill = (pillId) => {
     const today = new Date().toDateString();
     const newTaken = {
@@ -340,20 +340,20 @@ function App() {
     storage.set(STORAGE_KEYS.TAKEN_TODAY, newTaken);
   };
 
-  // Проверка, принято ли лекарство сегодня
+  // Check if pill is taken today
   const isPillTaken = (pillId) => {
     const today = new Date().toDateString();
     return takenToday[`${today}_${pillId}`] || false;
   };
 
-  // Планирование уведомлений
+  // Schedule notifications
   const scheduleNotifications = (pill) => {
     if ('serviceWorker' in navigator && 'Notification' in window) {
       navigator.serviceWorker.ready.then(registration => {
         const now = new Date();
         const [hours, minutes] = pill.time.split(':');
         
-        // Планируем уведомления на ближайшие 7 дней
+        // Schedule notifications for the next 7 days
         for (let i = 0; i < 7; i++) {
           const notificationDate = new Date(now);
           notificationDate.setDate(now.getDate() + i);
@@ -371,13 +371,13 @@ function App() {
     }
   };
 
-  // Обновление до PRO
+  // Upgrade to PRO
   const upgradeToPro = () => {
-    // Здесь будет интеграция с Google Play Billing
+    // Here will be Google Play Billing integration
     setIsPremium(true);
     storage.set(STORAGE_KEYS.PREMIUM, true);
     setShowProModal(false);
-    alert('Поздравляем! Вы обновились до PRO версии! 🎉');
+    alert('Congratulations! You upgraded to PRO version! 🎉');
   };
 
   const todaysPills = getTodaysPills();
@@ -390,7 +390,12 @@ function App() {
           <div className="flex items-center justify-between">
             <div>
               <h1 className="text-2xl font-bold text-gray-900">💊 Pill Reminder</h1>
-              <p className="text-gray-600 text-sm">Сегодня, {new Date().toLocaleDateString('ru-RU')}</p>
+              <p className="text-gray-600 text-sm">Today, {new Date().toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric' 
+              })}</p>
             </div>
             {!isPremium && (
               <button
@@ -409,14 +414,14 @@ function App() {
         {/* Today's Pills */}
         <div className="mb-8">
           <h2 className="text-lg font-semibold text-gray-900 mb-4">
-            На сегодня ({todaysPills.length})
+            Today's Schedule ({todaysPills.length})
           </h2>
           
           {todaysPills.length === 0 ? (
             <div className="text-center py-12">
               <div className="text-4xl mb-3">🎉</div>
-              <p className="text-gray-600">На сегодня лекарств нет!</p>
-              <p className="text-gray-500 text-sm">Добавьте новое лекарство, если нужно</p>
+              <p className="text-gray-600">No medications for today!</p>
+              <p className="text-gray-500 text-sm">Add a new medication if needed</p>
             </div>
           ) : (
             <div className="space-y-3">
@@ -437,19 +442,19 @@ function App() {
           <div className="grid grid-cols-3 gap-4 text-center">
             <div>
               <div className="text-2xl font-bold text-blue-600">{pills.length}</div>
-              <div className="text-xs text-gray-600">Лекарств</div>
+              <div className="text-xs text-gray-600">Total</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-green-600">
                 {todaysPills.filter(pill => isPillTaken(pill.id)).length}
               </div>
-              <div className="text-xs text-gray-600">Принято</div>
+              <div className="text-xs text-gray-600">Taken</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-orange-600">
                 {todaysPills.filter(pill => !isPillTaken(pill.id)).length}
               </div>
-              <div className="text-xs text-gray-600">Осталось</div>
+              <div className="text-xs text-gray-600">Remaining</div>
             </div>
           </div>
         </div>
@@ -461,7 +466,7 @@ function App() {
               [AdMob Banner]
             </div>
             <div className="text-xs text-gray-400 mt-1">
-              Реклама исчезнет в PRO версии
+              Ads removed in PRO version
             </div>
           </div>
         )}

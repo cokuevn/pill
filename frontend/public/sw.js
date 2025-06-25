@@ -1,4 +1,4 @@
-// Service Worker для PWA
+// Service Worker for PWA
 const CACHE_NAME = 'pill-reminder-v1';
 const urlsToCache = [
   '/',
@@ -7,7 +7,7 @@ const urlsToCache = [
   '/manifest.json'
 ];
 
-// Установка Service Worker
+// Install Service Worker
 self.addEventListener('install', (event) => {
   event.waitUntil(
     caches.open(CACHE_NAME)
@@ -15,7 +15,7 @@ self.addEventListener('install', (event) => {
   );
 });
 
-// Активация Service Worker
+// Activate Service Worker
 self.addEventListener('activate', (event) => {
   event.waitUntil(
     caches.keys().then((cacheNames) =>
@@ -30,7 +30,7 @@ self.addEventListener('activate', (event) => {
   );
 });
 
-// Перехват запросов
+// Intercept requests
 self.addEventListener('fetch', (event) => {
   event.respondWith(
     caches.match(event.request)
@@ -43,12 +43,12 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Обработка уведомлений
+// Handle notifications
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
   
   if (event.action === 'take_pill') {
-    // Отметить таблетку как принятую
+    // Mark pill as taken
     event.waitUntil(
       clients.matchAll().then((clientList) => {
         if (clientList.length > 0) {
@@ -62,7 +62,7 @@ self.addEventListener('notificationclick', (event) => {
       })
     );
   } else {
-    // Открыть приложение
+    // Open app
     event.waitUntil(
       clients.matchAll().then((clientList) => {
         if (clientList.length > 0) {
@@ -74,7 +74,7 @@ self.addEventListener('notificationclick', (event) => {
   }
 });
 
-// Показ уведомлений по расписанию
+// Show scheduled notifications
 self.addEventListener('message', (event) => {
   if (event.data.type === 'SCHEDULE_NOTIFICATION') {
     const { pill, time } = event.data;
@@ -84,15 +84,15 @@ self.addEventListener('message', (event) => {
     
     if (delay > 0) {
       setTimeout(() => {
-        self.registration.showNotification(`Время принять ${pill.name}`, {
-          body: `Не забудьте принять ${pill.name}`,
+        self.registration.showNotification(`Time to take ${pill.name}`, {
+          body: `Don't forget to take your ${pill.name}`,
           icon: '/favicon.ico',
           badge: '/favicon.ico',
           data: { pillId: pill.id },
           actions: [
             {
               action: 'take_pill',
-              title: 'Принял'
+              title: 'Taken'
             }
           ],
           requireInteraction: true,

@@ -1,15 +1,15 @@
 <!doctype html>
-<html lang="ru">
+<html lang="en">
     <head>
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no" />
         <meta name="theme-color" content="#4096FF" />
-        <meta name="description" content="Простое приложение для напоминания о приеме лекарств" />
+        <meta name="description" content="Simple medication reminder app to help you never miss a dose" />
         
-        <!-- PWA манифест -->
+        <!-- PWA manifest -->
         <link rel="manifest" href="/manifest.json" />
         
-        <!-- iOS Safari meta теги -->
+        <!-- iOS Safari meta tags -->
         <meta name="apple-mobile-web-app-capable" content="yes" />
         <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
         <meta name="apple-mobile-web-app-title" content="Pill Reminder" />
@@ -21,11 +21,11 @@
         
         <title>Simple Pill Reminder</title>
         
-        <!-- Preload критичных ресурсов -->
+        <!-- Preload critical resources -->
         <link rel="preload" href="/sw.js" as="script" />
     </head>
     <body>
-        <noscript>Для работы приложения необходимо включить JavaScript.</noscript>
+        <noscript>JavaScript needs to be enabled for the app to work.</noscript>
         <div id="root"></div>
         
         <!-- PWA Install Prompt -->
@@ -37,7 +37,7 @@
                 e.preventDefault();
                 deferredPrompt = e;
                 
-                // Показываем кнопку установки через 10 секунд
+                // Show install button after 10 seconds
                 if (!installPromptShown) {
                     setTimeout(showInstallPrompt, 10000);
                 }
@@ -53,17 +53,17 @@
                         <div style="display: flex; align-items: center; gap: 12px;">
                             <div>📱</div>
                             <div>
-                                <div style="font-weight: 600; font-size: 14px;">Установить приложение</div>
-                                <div style="font-size: 12px; color: #6b7280;">Для быстрого доступа</div>
+                                <div style="font-weight: 600; font-size: 14px;">Install App</div>
+                                <div style="font-size: 12px; color: #6b7280;">For quick access</div>
                             </div>
-                            <button onclick="installApp()" style="background: #4096FF; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;">Установить</button>
+                            <button onclick="installApp()" style="background: #4096FF; color: white; border: none; padding: 8px 16px; border-radius: 8px; font-size: 12px; font-weight: 600;">Install</button>
                             <button onclick="hideInstallPrompt()" style="background: none; border: none; color: #6b7280; font-size: 18px; padding: 4px;">×</button>
                         </div>
                     `;
                     
                     document.body.appendChild(prompt);
                     
-                    // Автоматически скрыть через 10 секунд
+                    // Auto hide after 10 seconds
                     setTimeout(() => {
                         if (prompt.parentNode) {
                             prompt.parentNode.removeChild(prompt);
@@ -88,17 +88,17 @@
                 }
             }
             
-            // Отслеживание установки
+            // Track installation
             window.addEventListener('appinstalled', () => {
-                console.log('PWA установлено');
+                console.log('PWA installed');
                 deferredPrompt = null;
             });
         </script>
         
         <!-- Analytics placeholder -->
         <script>
-            // Здесь будет Google Analytics или другая аналитика
-            console.log('Pill Reminder PWA запущено');
+            // Here will be Google Analytics or other analytics
+            console.log('Pill Reminder PWA launched');
         </script>
     </body>
 </html>

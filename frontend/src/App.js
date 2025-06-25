@@ -1187,6 +1187,12 @@ function App() {
         pillCount={pills.length}
       />
 
+      <ProModal
+        isOpen={showProModal}
+        onClose={() => setShowProModal(false)}
+        onUpgrade={upgradeToPro}
+      />
+
       <AIChatModal
         isOpen={showAIChat}
         onClose={() => setShowAIChat(false)}

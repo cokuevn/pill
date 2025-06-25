@@ -811,17 +811,40 @@ function App() {
     }
   }, []);
 
-  // Load data on startup
+  // Load data on startup with IndexedDB
   useEffect(() => {
-    const savedPills = storage.get(STORAGE_KEYS.PILLS) || [];
-    const savedTaken = storage.get(STORAGE_KEYS.TAKEN_TODAY) || {};
-    const savedPremium = storage.get(STORAGE_KEYS.PREMIUM) || false;
+    const loadData = async () => {
+      try {
+        // Initialize storage (includes migration from localStorage)
+        await storage.init();
+        
+        // Load all data
+        const savedPills = await storage.getPills();
+        const savedTaken = await storage.getTakenToday();
+        const savedPremium = await storage.getPremiumStatus();
+        
+        setPills(savedPills);
+        setTakenToday(savedTaken);
+        setIsPremium(savedPremium);
+        
+        console.log('✅ Data loaded from IndexedDB');
+        console.log('- Pills:', savedPills.length);
+        console.log('- Premium status:', savedPremium);
+        
+        // Get storage info
+        const storageInfo = await storage.getStorageInfo();
+        console.log('📊 Storage info:', storageInfo);
+        
+      } catch (error) {
+        console.error('❌ Error loading data:', error);
+        // Fallback to default values
+        setPills([]);
+        setTakenToday({});
+        setIsPremium(false);
+      }
+    };
     
-    setPills(savedPills);
-    setTakenToday(savedTaken);
-    setIsPremium(savedPremium);
-    
-    console.log('Loaded premium status:', savedPremium); // Debug
+    loadData();
   }, []);
 
   // Register Service Worker

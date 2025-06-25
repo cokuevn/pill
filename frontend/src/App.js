@@ -977,23 +977,33 @@ function App() {
     }
   };
 
-  // Mark pill as taken
-  const takePill = (pillId) => {
-    const today = new Date().toDateString();
-    const newTaken = {
-      ...takenToday,
-      [`${today}_${pillId}`]: true
-    };
-    setTakenToday(newTaken);
-    storage.set(STORAGE_KEYS.TAKEN_TODAY, newTaken);
+  // Mark pill as taken with IndexedDB
+  const takePill = async (pillId) => {
+    try {
+      // Save to IndexedDB
+      await storage.markPillTaken(pillId);
+      
+      // Update state for immediate UI feedback
+      const today = new Date().toDateString();
+      const newTaken = {
+        ...takenToday,
+        [`${today}_${pillId}`]: true
+      };
+      setTakenToday(newTaken);
 
-    // Find pill name for notification
-    const pill = pills.find(p => p.id === pillId);
-    if (pill && 'Notification' in window && Notification.permission === 'granted') {
-      new Notification('Medication Taken! ✅', {
-        body: `Great job taking your ${pill.name}!`,
-        icon: '/manifest-icon-192.maskable.png'
-      });
+      // Find pill name for notification
+      const pill = pills.find(p => p.id === pillId);
+      if (pill && 'Notification' in window && Notification.permission === 'granted') {
+        new Notification('Medication Taken! ✅', {
+          body: `Great job taking your ${pill.name}!`,
+          icon: '/manifest-icon-192.maskable.png'
+        });
+      }
+      
+      console.log('✅ Pill marked as taken in IndexedDB:', pillId);
+    } catch (error) {
+      console.error('❌ Error marking pill as taken:', error);
+      alert('Error marking medication as taken. Please try again.');
     }
   };
 

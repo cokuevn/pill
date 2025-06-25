@@ -973,7 +973,7 @@ function App() {
       </header>
 
       {/* Main Content */}
-      <main className="max-w-md mx-auto px-4 py-6">
+      <main className="max-w-md mx-auto px-4 py-6" id="main">
         {/* AI Quick Tips */}
         {pills.length > 0 && navigator.onLine && (
           <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">

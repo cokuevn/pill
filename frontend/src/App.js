@@ -418,6 +418,8 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
     e.preventDefault();
     if (!name.trim() || days.length === 0) return;
 
+    console.log('Adding pill. isPremium:', isPremium, 'pillCount:', pillCount); // Debug
+    
     // Check limit for free version
     if (!isPremium && pillCount >= 3) {
       alert('Free version supports maximum 3 medications. Upgrade to PRO for unlimited!');

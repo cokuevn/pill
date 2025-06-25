@@ -698,6 +698,96 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
   );
 };
 
+// PRO Modal Component
+const ProModal = ({ isOpen, onClose, onUpgrade }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-slide-up">
+        <div className="text-center">
+          <div className="text-4xl mb-4">⭐</div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to PRO</h2>
+          <p className="text-gray-600 mb-6">Unlock unlimited medications and advanced AI features</p>
+          
+          <div className="space-y-4 mb-6 text-left">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Unlimited medications</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Advanced AI health insights</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">AI drug interaction checker</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Personalized medication schedules</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">AI wellness coaching</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Medication history & analytics</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Ad-free experience</span>
+            </div>
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                <span className="text-green-600 text-sm">✓</span>
+              </div>
+              <span className="text-gray-700">Priority AI support</span>
+            </div>
+          </div>
+          
+          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
+            <div className="text-3xl font-bold text-blue-600">
+              $2.99<span className="text-sm font-normal text-gray-500">/month</span>
+            </div>
+            <p className="text-xs text-gray-500 mt-1">Cancel anytime • 7-day free trial</p>
+          </div>
+          
+          <div className="space-y-3">
+            <button
+              onClick={onUpgrade}
+              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 font-medium transition-all transform hover:scale-105"
+            >
+              🚀 Start Free Trial
+            </button>
+            <button
+              onClick={onClose}
+              className="w-full px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors"
+            >
+              Maybe later
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 // Main App Component
 function App() {
   const [pills, setPills] = useState([]);

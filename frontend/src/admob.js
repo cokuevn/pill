@@ -73,9 +73,9 @@ class AdMobManager {
         await this.loadAdSenseScript(config.publisherId);
       }
       
-      // Initialize AdSense
+      // Initialize AdSense with real Publisher ID
       (window.adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: config.publisherId || "ca-pub-0000000000000000",
+        google_ad_client: config.publisherId || this.productionIds.publisherId,
         enable_page_level_ads: true
       });
       

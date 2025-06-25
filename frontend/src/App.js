@@ -5,13 +5,7 @@ import storage from './storage.js';
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;
 
-// Data storage utilities
-const STORAGE_KEYS = {
-  PILLS: 'pill_reminder_pills',
-  TAKEN_TODAY: 'pill_reminder_taken_today',
-  AI_SESSION: 'pill_reminder_ai_session',
-  PREMIUM: 'pill_reminder_premium'
-};
+// Data storage utilities - используем новую систему хранения
 
 // Pill data model
 const createPill = (name, time, days, icon = '💊') => ({

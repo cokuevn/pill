@@ -268,26 +268,56 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
         <div className="flex-1 overflow-y-auto p-4 space-y-4">
           {messages.length === 0 && (
             <div className="text-center py-8">
-              <div className="text-4xl mb-4">🤖</div>
-              <h3 className="font-medium text-gray-900 mb-2">Hello! I'm your AI assistant</h3>
+              <div className="text-4xl mb-4">
+                {chatType === 'support' ? '🛠️' : chatType === 'recommendation' ? '💡' : '💬'}
+              </div>
+              <h3 className="font-medium text-gray-900 mb-2">
+                {chatType === 'support' ? 'Support Assistant' : 
+                 chatType === 'recommendation' ? 'Wellness Tips' : 
+                 'General Assistant'}
+              </h3>
               <p className="text-gray-600 text-sm mb-4">
-                I can help you with app questions, medication tips, and general wellness advice.
+                {chatType === 'support' ? 'I can help you with app questions and technical support.' :
+                 chatType === 'recommendation' ? 'Get personalized medication tips and wellness advice.' :
+                 'Ask me anything about medications and health topics.'}
               </p>
               
               {/* Quick Actions */}
               <div className="space-y-2">
-                <button
-                  onClick={getRecommendations}
-                  disabled={pills.length === 0}
-                  className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl hover:from-green-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
-                >
-                  ✨ Get Personalized Tips ({pills.length} medications)
-                </button>
+                {chatType === 'recommendation' && (
+                  <button
+                    onClick={getRecommendations}
+                    disabled={pills.length === 0}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl hover:from-green-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
+                  >
+                    ✨ Analyze My Schedule ({pills.length} medications)
+                  </button>
+                )}
+                {chatType === 'support' && (
+                  <button
+                    onClick={() => setCurrentMessage("Show me all app features")}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 transition-all"
+                  >
+                    📱 Show App Features
+                  </button>
+                )}
+                {chatType === 'general' && (
+                  <button
+                    onClick={() => setCurrentMessage("Tell me about medication safety basics")}
+                    className="w-full px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 text-white rounded-xl hover:from-purple-600 hover:to-pink-600 transition-all"
+                  >
+                    🏥 Medication Safety Tips
+                  </button>
+                )}
               </div>
 
               {/* Quick Questions */}
               <div className="mt-6 text-left">
-                <p className="text-xs text-gray-500 mb-2">Quick questions:</p>
+                <p className="text-xs text-gray-500 mb-2">
+                  {chatType === 'support' ? 'Common questions:' :
+                   chatType === 'recommendation' ? 'Popular topics:' :
+                   'Frequently asked:'}
+                </p>
                 <div className="space-y-1">
                   {quickQuestions.map((question, index) => (
                     <button

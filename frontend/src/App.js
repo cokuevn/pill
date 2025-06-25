@@ -835,11 +835,13 @@ function App() {
   useEffect(() => {
     const savedPills = storage.get(STORAGE_KEYS.PILLS) || [];
     const savedTaken = storage.get(STORAGE_KEYS.TAKEN_TODAY) || {};
-    const savedPremium = storage.get('pill_reminder_premium') || false;
+    const savedPremium = storage.get(STORAGE_KEYS.PREMIUM) || false;
     
     setPills(savedPills);
     setTakenToday(savedTaken);
     setIsPremium(savedPremium);
+    
+    console.log('Loaded premium status:', savedPremium); // Debug
   }, []);
 
   // Register Service Worker

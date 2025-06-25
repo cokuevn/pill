@@ -1197,17 +1197,6 @@ function App() {
         +
       </button>
 
-      {/* AI Chat Button (floating) */}
-      {navigator.onLine && (
-        <button
-          onClick={() => setShowAIChat(true)}
-          className="fixed bottom-6 left-6 w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-lg z-40 transition-all transform hover:scale-110 active:scale-95"
-          title="AI Assistant"
-        >
-          🤖
-        </button>
-      )}
-
       {/* Modals */}
       <AddPillModal
         isOpen={showAddModal}

@@ -510,6 +510,24 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
             )}
           </div>
 
+          {/* Free version limit warning */}
+          {!isPremium && pillCount >= 2 && (
+            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
+              <div className="flex items-center space-x-2">
+                <span className="text-amber-600">⚠️</span>
+                <div>
+                  <p className="text-amber-800 text-sm font-medium">
+                    Free Version Limit
+                  </p>
+                  <p className="text-amber-700 text-xs">
+                    You have {pillCount} of 3 available medications.
+                    {pillCount >= 3 && ' Upgrade to PRO for unlimited!'}
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
             <button

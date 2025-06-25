@@ -1130,19 +1130,16 @@ function App() {
 
         {/* AdMob/AdSense Banner */}
         <div id="main-ad-banner" className="my-4">
-          {/* AdSense banner will be inserted here dynamically */}
+          {/* Real AdSense banner will be inserted here */}
         </div>
 
-        {/* AdMob Banner Placeholder - Обновленный с реальными ID */}
-        <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 mb-6 text-center border border-green-200">
-          <div className="text-green-700 text-sm font-medium mb-1">
-            💰 Live AdMob Integration
+        {/* Fallback ad placeholder - only show if real ads fail to load */}
+        <div id="ad-fallback" className="bg-gradient-to-r from-gray-100 to-gray-200 rounded-xl p-3 mb-6 text-center border border-gray-300" style={{display: 'none'}}>
+          <div className="text-gray-600 text-xs">
+            📢 Advertisement
           </div>
-          <div className="text-xs text-green-600 mb-2">
-            Real ads from Publisher: ca-pub-4181222038181630 ✅
-          </div>
-          <div className="text-xs text-green-500">
-            Thank you for supporting our free app! 🙏
+          <div className="text-xs text-gray-500 mt-1">
+            Supporting free app development
           </div>
         </div>
       </main>

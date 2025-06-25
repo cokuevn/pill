@@ -925,8 +925,10 @@ function App() {
   // Upgrade to PRO
   const upgradeToPro = () => {
     setIsPremium(true);
-    storage.set('pill_reminder_premium', true);
+    storage.set(STORAGE_KEYS.PREMIUM, true);
     setShowProModal(false);
+    
+    console.log('Upgraded to PRO!'); // Debug
     
     // Show success notification
     if ('Notification' in window && Notification.permission === 'granted') {

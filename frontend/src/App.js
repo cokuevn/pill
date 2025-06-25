@@ -390,7 +390,7 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
 };
 
 // Add Pill Modal Component
-const AddPillModal = ({ isOpen, onClose, onAdd }) => {
+const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
   const [name, setName] = useState('');
   const [time, setTime] = useState('09:00');
   const [days, setDays] = useState([]);

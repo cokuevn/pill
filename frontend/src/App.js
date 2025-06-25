@@ -1008,13 +1008,6 @@ function App() {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              <button
-                onClick={() => setShowAIChat(true)}
-                className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all transform hover:scale-105"
-                title="AI Assistant"
-              >
-                🤖
-              </button>
               {!isPremium && (
                 <button
                   onClick={() => setShowProModal(true)}

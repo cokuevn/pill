@@ -151,8 +151,8 @@ class AdMobManager {
     const adElement = document.createElement('ins');
     adElement.className = 'adsbygoogle';
     adElement.style.display = 'block';
-    adElement.setAttribute('data-ad-client', options.publisherId || 'ca-pub-0000000000000000');
-    adElement.setAttribute('data-ad-slot', options.adSlot || '0000000000');
+    adElement.setAttribute('data-ad-client', options.publisherId || this.productionIds.publisherId);
+    adElement.setAttribute('data-ad-slot', options.adSlot || this.productionIds.banner.split('/')[1]);
     adElement.setAttribute('data-ad-format', options.format || 'auto');
     adElement.setAttribute('data-full-width-responsive', 'true');
     

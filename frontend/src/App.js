@@ -23,25 +23,6 @@ const createPill = (name, time, days, icon = '💊') => ({
   createdAt: new Date().toISOString()
 });
 
-// Local storage utilities
-const storage = {
-  get: (key) => {
-    try {
-      const item = localStorage.getItem(key);
-      return item ? JSON.parse(item) : null;
-    } catch {
-      return null;
-    }
-  },
-  set: (key, value) => {
-    try {
-      localStorage.setItem(key, JSON.stringify(value));
-    } catch {
-      console.error('Storage error');
-    }
-  }
-};
-
 // PWA Status Component
 const PWAStatus = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);

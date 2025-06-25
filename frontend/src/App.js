@@ -762,25 +762,27 @@ function App() {
         console.log('Notification permission:', permission);
       }
 
-      // Initialize AdMob/AdSense
+      // Initialize AdMob/AdSense with real IDs
       try {
         const adConfig = {
-          publisherId: 'ca-pub-0000000000000000', // Replace with real ID
-          bannerId: 'ca-app-pub-3940256099942544/6300978111', // Test ID
-          interstitialId: 'ca-app-pub-3940256099942544/1033173712' // Test ID
+          publisherId: 'ca-pub-4181222038181630', // Your real Publisher ID
+          bannerId: 'ca-app-pub-4181222038181630/7332397743', // Your Banner Ad Unit
+          interstitialId: 'ca-app-pub-4181222038181630/5191667171', // Your Interstitial Ad Unit
+          adSlot: '7332397743' // Banner ad slot for AdSense
         };
         
         const adInitialized = await adMob.init(adConfig);
         if (adInitialized) {
-          console.log('✅ Ad system initialized');
+          console.log('✅ Real AdMob/AdSense initialized with your IDs');
           
           // Show banner ad after 3 seconds
           setTimeout(() => {
             adMob.showBanner({
               containerId: 'main-ad-banner',
               parent: 'main',
-              adSlot: '0000000000', // Replace with real slot
-              format: 'rectangle'
+              publisherId: 'ca-pub-4181222038181630',
+              adSlot: '7332397743',
+              format: 'auto'
             });
           }, 3000);
         }

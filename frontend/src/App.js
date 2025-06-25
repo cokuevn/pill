@@ -1109,16 +1109,21 @@ function App() {
           </div>
         </div>
 
-        {/* AdMob Banner Placeholder - Показываем всегда */}
+        {/* AdMob/AdSense Banner */}
+        <div id="main-ad-banner" className="my-4">
+          {/* AdSense banner will be inserted here dynamically */}
+        </div>
+
+        {/* AdMob Banner Placeholder - Показываем пока реклама не загрузилась */}
         <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-4 mb-6 text-center border border-blue-200">
           <div className="text-blue-700 text-sm font-medium mb-1">
             📢 Advertisement Space
           </div>
           <div className="text-xs text-blue-600 mb-2">
-            AdMob banner will appear here after Google Play deployment
+            Loading ads... Please support our free app! ✨
           </div>
           <div className="text-xs text-blue-500">
-            Supporting free app development ✨
+            Revenue helps us improve the app and AI features
           </div>
         </div>
       </main>

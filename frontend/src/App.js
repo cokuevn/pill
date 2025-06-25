@@ -811,6 +811,13 @@ function App() {
       // Schedule notifications
       scheduleNotifications(pill);
 
+      // Show interstitial ad occasionally (every 3rd medication added)
+      if (pills.length > 0 && pills.length % 3 === 0) {
+        setTimeout(() => {
+          adMob.showInterstitial();
+        }, 1000);
+      }
+
       // Show success message
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Medication Added! 💊', {

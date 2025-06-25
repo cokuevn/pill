@@ -715,9 +715,14 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
 
 // PRO Modal Component
 const ProModal = ({ isOpen, onClose, onUpgrade }) => {
-  console.log('ProModal render:', { isOpen }); // Debug
+  console.log('🔍 ProModal render:', { isOpen, onClose: !!onClose, onUpgrade: !!onUpgrade });
   
-  if (!isOpen) return null;
+  if (!isOpen) {
+    console.log('❌ ProModal not showing because isOpen =', isOpen);
+    return null;
+  }
+
+  console.log('✅ ProModal should be visible now!');
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">

@@ -1,7 +1,7 @@
 // Enhanced Service Worker для PWA
-const CACHE_NAME = 'pill-reminder-v2';
-const STATIC_CACHE = 'pill-reminder-static-v2';
-const DYNAMIC_CACHE = 'pill-reminder-dynamic-v2';
+const CACHE_NAME = 'pill-reminder-v3-production';
+const STATIC_CACHE = 'pill-reminder-static-v3';
+const DYNAMIC_CACHE = 'pill-reminder-dynamic-v3';
 
 // Файлы для кэширования
 const STATIC_FILES = [

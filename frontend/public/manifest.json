@@ -5,47 +5,29 @@
   "start_url": "/",
   "display": "standalone",
   "orientation": "portrait-primary",
-  "theme_color": "#4096FF",
+  "theme_color": "#4FA6FF",
   "background_color": "#ffffff",
   "lang": "en-US",
   "scope": "/",
   "categories": ["health", "medical", "productivity", "lifestyle"],
   "icons": [
     {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQwOTZGRiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJTNi40OCAyMiAxMiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDEyIDJaTTE3IDE3SDdWMTBIMTdWMTdaIi8+PHBhdGggZD0iTTkgMTJIMTVWMTRIOVYxMloiLz48L3N2Zz4=",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon-512.png", 
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNzIiIGhlaWdodD0iNzIiIHZpZXdCb3g9IjAgMCAxOTIgMTkyIiBmaWxsPSJub25lIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxyZWN0IHdpZHRoPSIxOTIiIGhlaWdodD0iMTkyIiByeD0iNDAiIGZpbGw9InVybCgjZ3JhZGllbnQwX2xpbmVhcl8xXzEpIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSI3NiIgcj0iMjQiIGZpbGw9IndoaXRlIi8+PGNpcmNsZSBjeD0iOTYiIGN5PSIxMzYiIHI9IjE2IiBmaWxsPSJ3aGl0ZSIvPjxyZWN0IHg9Ijc2IiB5PSI5NiIgd2lkdGg9IjQwIiBoZWlnaHQ9IjgiIHJ4PSI0IiBmaWxsPSJ3aGl0ZSIvPjxkZWZzPjxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZGllbnQwX2xpbmVhcl8xXzEiIHgxPSIwIiB5MT0iMCIgeDI9IjE5MiIgeTI9IjE5MiIgZ3JhZGllbnRVbml0cz0idXNlclNwYWNlT25Vc2UiPjxzdG9wIHN0b3AtY29sb3I9IiM0RkE2RkYiLz48c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiMyNTYzRUIiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48L3N2Zz4=",
       "sizes": "72x72",
       "type": "image/svg+xml",
       "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQwOTZGRiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJTNi40OCAyMiAxMiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDEyIDJaTTE3IDE3SDdWMTBIMTdWMTdaIi8+PHBhdGggZD0iTTkgMTJIMTVWMTRIOVYxMloiLz48L3N2Zz4=",
-      "sizes": "96x96",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNDA5NkZGIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMlM2LjQ4IDIyIDEyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTIgMlpNMTcgMTdIN1YxMEgxN1YxN1oiLz48cGF0aCBkPSJNOSAxMkgxNVYxNEg5VjEyWiIvPjwvc3ZnPg==",
-      "sizes": "128x128",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTQ0IiBoZWlnaHQ9IjE0NCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNDA5NkZGIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMlM2LjQ4IDIyIDEyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTIgMlpNMTcgMTdIN1YxMEgxN1YxN1oiLz48cGF0aCBkPSJNOSAxMkgxNVYxNEg5VjEyWiIvPjwvc3ZnPg==",
-      "sizes": "144x144",
-      "type": "image/svg+xml",
-      "purpose": "any"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNDA5NkZGIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMlM2LjQ4IDIyIDEyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTIgMlpNMTcgMTdIN1YxMEgxN1YxN1oiLz48cGF0aCBkPSJNOSAxMkgxNVYxNEg5VjEyWiIvPjwvc3ZnPg==",
-      "sizes": "192x192",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
-    },
-    {
-      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNTEyIiBoZWlnaHQ9IjUxMiIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSIjNDA5NkZGIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciPjxwYXRoIGQ9Ik0xMiAyQzYuNDggMiAyIDYuNDggMiAxMlM2LjQ4IDIyIDEyIDIyIDIyIDE3LjUyIDIyIDEyUzE3LjUyIDIgMTIgMlpNMTcgMTdIN1YxMEgxN1YxN1oiLz48cGF0aCBkPSJNOSAxMkgxNVYxNEg5VjEyWiIvPjwvc3ZnPg==",
-      "sizes": "512x512",
-      "type": "image/svg+xml",
-      "purpose": "any maskable"
     }
   ],
   "screenshots": [
@@ -65,18 +47,6 @@
       "icons": [
         {
           "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzRGQTk0RCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTkgMTNIMTNWMTlIMTFWMTNINVYxMUgxMVY1SDEzVjExSDE5VjEzWiIvPjwvc3ZnPg==",
-          "sizes": "96x96"
-        }
-      ]
-    },
-    {
-      "name": "Today's Pills",
-      "short_name": "Today",
-      "description": "View today's medication schedule",
-      "url": "/?view=today",
-      "icons": [
-        {
-          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0iIzQwOTZGRiIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cGF0aCBkPSJNMTIgMkM2LjQ4IDIgMiA2LjQ4IDIgMTJTNi40OCAyMiAxMiAyMiAyMiAxNy41MiAyMiAxMlMxNy41MiAyIDEyIDJaTTEzIDE3SDExVjExSDEzVjE3Wk0xMyA5SDExVjdIMTNWOVoiLz48L3N2Zz4=",
           "sizes": "96x96"
         }
       ]

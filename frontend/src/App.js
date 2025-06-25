@@ -378,8 +378,8 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
   );
 };
 
-// Add Pill Modal Component
-const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
+// Add Pill Modal Component - Убрал все PRO ограничения
+const AddPillModal = ({ isOpen, onClose, onAdd }) => {
   const [name, setName] = useState('');
   const [time, setTime] = useState('09:00');
   const [days, setDays] = useState([]);
@@ -405,14 +405,6 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!name.trim() || days.length === 0) return;
-
-    console.log('Adding pill. isPremium:', isPremium, 'pillCount:', pillCount); // Debug
-    
-    // Check limit for free version
-    if (!isPremium && pillCount >= 3) {
-      alert('Free version supports maximum 3 medications. Upgrade to PRO for unlimited!');
-      return;
-    }
 
     const pill = createPill(name.trim(), time, days);
     onAdd(pill);
@@ -500,24 +492,6 @@ const AddPillModal = ({ isOpen, onClose, onAdd, isPremium, pillCount }) => {
               </p>
             )}
           </div>
-
-          {/* Free version limit warning */}
-          {!isPremium && pillCount >= 2 && (
-            <div className="bg-amber-50 border border-amber-200 rounded-xl p-4">
-              <div className="flex items-center space-x-2">
-                <span className="text-amber-600">⚠️</span>
-                <div>
-                  <p className="text-amber-800 text-sm font-medium">
-                    Free Version Limit
-                  </p>
-                  <p className="text-amber-700 text-xs">
-                    You have {pillCount} of 3 available medications.
-                    {pillCount >= 3 && ' Upgrade to PRO for unlimited!'}
-                  </p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* Buttons */}
           <div className="flex gap-3 pt-2">
@@ -663,7 +637,7 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
             <div className="space-y-1 text-sm text-gray-600">
               <p>Total Medications: {pillCount}</p>
               <p>Version: 1.0.0</p>
-              <p>Storage: Local (offline-ready)</p>
+              <p>Storage: IndexedDB (offline-ready)</p>
               <p>AI: GPT-4o powered assistant</p>
             </div>
           </div>
@@ -713,115 +687,13 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
   );
 };
 
-// PRO Modal Component
-const ProModal = ({ isOpen, onClose, onUpgrade }) => {
-  console.log('🔍 ProModal render:', { isOpen, onClose: !!onClose, onUpgrade: !!onUpgrade });
-  
-  if (!isOpen) {
-    console.log('❌ ProModal not showing because isOpen =', isOpen);
-    return null;
-  }
-
-  console.log('✅ ProModal should be visible now!');
-
-  return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-slide-up">
-        <div className="text-center">
-          <div className="text-4xl mb-4">⭐</div>
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Upgrade to PRO</h2>
-          <p className="text-gray-600 mb-6">Unlock unlimited medications and advanced AI features</p>
-          
-          <div className="space-y-4 mb-6 text-left">
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Unlimited medications</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Advanced AI health insights</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">AI drug interaction checker</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Personalized medication schedules</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">AI wellness coaching</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Medication history & analytics</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Ad-free experience</span>
-            </div>
-            <div className="flex items-center space-x-3">
-              <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
-                <span className="text-green-600 text-sm">✓</span>
-              </div>
-              <span className="text-gray-700">Priority AI support</span>
-            </div>
-          </div>
-          
-          <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-xl p-4 mb-6">
-            <div className="text-3xl font-bold text-blue-600">
-              $2.99<span className="text-sm font-normal text-gray-500">/month</span>
-            </div>
-            <p className="text-xs text-gray-500 mt-1">Cancel anytime • 7-day free trial</p>
-          </div>
-          
-          <div className="space-y-3">
-            <button
-              onClick={onUpgrade}
-              className="w-full px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl hover:from-blue-600 hover:to-purple-600 font-medium transition-all transform hover:scale-105"
-            >
-              🚀 Start Free Trial
-            </button>
-            <button
-              onClick={onClose}
-              className="w-full px-6 py-3 text-gray-500 hover:text-gray-700 transition-colors"
-            >
-              Maybe later
-            </button>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-};
-
 // Main App Component
 function App() {
   const [pills, setPills] = useState([]);
   const [takenToday, setTakenToday] = useState({});
-  const [isPremium, setIsPremium] = useState(false); // Принудительно false
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
-  const [showProModal, setShowProModal] = useState(false);
-
-  // Debug isPremium state
-  console.log('🔍 Current isPremium state:', isPremium);
 
   // Check URL parameters for shortcuts
   useEffect(() => {
@@ -841,22 +713,12 @@ function App() {
         // Load all data
         const savedPills = await storage.getPills();
         const savedTaken = await storage.getTakenToday();
-        const savedPremium = await storage.getPremiumStatus();
         
         setPills(savedPills);
         setTakenToday(savedTaken);
-        setIsPremium(savedPremium);
         
         console.log('✅ Data loaded from IndexedDB');
         console.log('- Pills:', savedPills.length);
-        console.log('- Premium status:', savedPremium);
-        
-        // TEMPORARY: Force premium to false for testing
-        if (savedPremium) {
-          console.log('🔧 Forcing premium to false for testing');
-          await storage.setPremiumStatus(false);
-          setIsPremium(false);
-        }
         
         // Get storage info
         const storageInfo = await storage.getStorageInfo();
@@ -867,7 +729,6 @@ function App() {
         // Fallback to default values
         setPills([]);
         setTakenToday({});
-        setIsPremium(false);
       }
     };
     
@@ -924,7 +785,7 @@ function App() {
       if ('Notification' in window && Notification.permission === 'granted') {
         new Notification('Medication Added! 💊', {
           body: `${pill.name} has been added to your schedule`,
-          icon: '/manifest-icon-192.maskable.png'
+          icon: '/icon-192.png'
         });
       }
       
@@ -970,37 +831,11 @@ function App() {
       // Update state
       setPills([]);
       setTakenToday({});
-      setIsPremium(false);
       
       console.log('✅ All data cleared from IndexedDB');
     } catch (error) {
       console.error('❌ Error clearing data:', error);
       alert('Error clearing data. Please try again.');
-    }
-  };
-
-  // Upgrade to PRO with IndexedDB
-  const upgradeToPro = async () => {
-    try {
-      // Save to IndexedDB
-      await storage.setPremiumStatus(true);
-      
-      // Update state
-      setIsPremium(true);
-      setShowProModal(false);
-      
-      console.log('✅ Upgraded to PRO in IndexedDB');
-      
-      // Show success notification
-      if ('Notification' in window && Notification.permission === 'granted') {
-        new Notification('Welcome to PRO! 🎉', {
-          body: 'You now have unlimited access to all AI features!',
-          icon: '/manifest-icon-192.maskable.png'
-        });
-      }
-    } catch (error) {
-      console.error('❌ Error upgrading to PRO:', error);
-      alert('Error upgrading to PRO. Please try again.');
     }
   };
 
@@ -1023,7 +858,7 @@ function App() {
       if (pill && 'Notification' in window && Notification.permission === 'granted') {
         new Notification('Medication Taken! ✅', {
           body: `Great job taking your ${pill.name}!`,
-          icon: '/manifest-icon-192.maskable.png'
+          icon: '/icon-192.png'
         });
       }
       
@@ -1072,7 +907,7 @@ function App() {
       {/* PWA Status */}
       <PWAStatus />
 
-      {/* Header */}
+      {/* Header - Убрал все PRO элементы */}
       <header className="bg-white shadow-sm">
         <div className="max-w-md mx-auto px-4 py-6">
           <div className="flex items-center justify-between">
@@ -1088,25 +923,6 @@ function App() {
               </p>
             </div>
             <div className="flex items-center space-x-2">
-              {console.log('🔍 Rendering header, isPremium:', isPremium)}
-              {!isPremium && (
-                <button
-                  onClick={() => {
-                    console.log('PRO button clicked! isPremium:', isPremium); // Debug
-                    console.log('showProModal before:', showProModal);
-                    setShowProModal(true);
-                    console.log('showProModal after setShowProModal(true)');
-                  }}
-                  className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
-                >
-                  ⭐ PRO
-                </button>
-              )}
-              {isPremium && (
-                <div className="px-3 py-1 bg-gradient-to-r from-green-500 to-blue-500 text-white text-xs rounded-full font-medium">
-                  ✨ PRO
-                </div>
-              )}
               <button
                 onClick={() => setShowSettingsModal(true)}
                 className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
@@ -1255,23 +1071,19 @@ function App() {
             </div>
           </div>
         </div>
-        {/* AdMob Banner Placeholder (Free version only) */}
-        {!isPremium && pills.length > 0 && (
-          <div className="bg-gray-100 rounded-xl p-4 mb-6 text-center border-2 border-dashed border-gray-300">
-            <div className="text-gray-500 text-sm font-medium mb-1">
-              📢 Advertisement
-            </div>
-            <div className="text-xs text-gray-400 mb-2">
-              Support us by viewing ads or upgrade to PRO to remove them
-            </div>
-            <button
-              onClick={() => setShowProModal(true)}
-              className="px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 transition-colors"
-            >
-              Remove Ads - Go PRO
-            </button>
+
+        {/* AdMob Banner Placeholder - Показываем всегда */}
+        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-4 mb-6 text-center border border-blue-200">
+          <div className="text-blue-700 text-sm font-medium mb-1">
+            📢 Advertisement Space
           </div>
-        )}
+          <div className="text-xs text-blue-600 mb-2">
+            AdMob banner will appear here after Google Play deployment
+          </div>
+          <div className="text-xs text-blue-500">
+            Supporting free app development ✨
+          </div>
+        </div>
       </main>
 
       {/* Add Button */}
@@ -1288,8 +1100,6 @@ function App() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={addPill}
-        isPremium={isPremium}
-        pillCount={pills.length}
       />
 
       <SettingsModal
@@ -1297,12 +1107,6 @@ function App() {
         onClose={() => setShowSettingsModal(false)}
         onClearData={clearAllData}
         pillCount={pills.length}
-      />
-
-      <ProModal
-        isOpen={showProModal}
-        onClose={() => setShowProModal(false)}
-        onUpgrade={upgradeToPro}
       />
 
       <AIChatModal

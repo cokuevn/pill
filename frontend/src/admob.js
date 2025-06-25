@@ -237,8 +237,8 @@ class AdMobManager {
     const adElement = document.createElement('ins');
     adElement.className = 'adsbygoogle';
     adElement.style.display = 'block';
-    adElement.setAttribute('data-ad-client', 'ca-pub-0000000000000000');
-    adElement.setAttribute('data-ad-slot', '0000000000');
+    adElement.setAttribute('data-ad-client', this.productionIds.publisherId);
+    adElement.setAttribute('data-ad-slot', this.productionIds.interstitial.split('/')[1]);
     adElement.setAttribute('data-ad-format', 'fluid');
     
     adContainer.appendChild(closeBtn);

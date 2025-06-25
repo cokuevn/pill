@@ -1,0 +1,340 @@
+// AdMob Integration for React PWA
+// Works with both web AdSense and TWA AdMob
+
+class AdMobManager {
+  constructor() {
+    this.isAdMobSupported = 'admob' in window || 'cordova' in window;
+    this.isWebAdSupported = true;
+    this.adUnits = {
+      banner: null,
+      interstitial: null,
+      rewarded: null
+    };
+    
+    // Test IDs - replace with real IDs in production
+    this.testIds = {
+      banner: 'ca-app-pub-3940256099942544/6300978111',
+      interstitial: 'ca-app-pub-3940256099942544/1033173712',
+      rewarded: 'ca-app-pub-3940256099942544/5224354917'
+    };
+  }
+
+  // Initialize AdMob (for TWA) or AdSense (for web)
+  async init(config = {}) {
+    try {
+      console.log('🚀 Initializing Ad system...');
+      
+      if (this.isNativeApp()) {
+        return await this.initAdMob(config);
+      } else {
+        return await this.initAdSense(config);
+      }
+    } catch (error) {
+      console.error('❌ Ad initialization failed:', error);
+      return false;
+    }
+  }
+
+  // Check if running in native app (TWA)
+  isNativeApp() {
+    return window.ReactNativeWebView || 
+           window.Android || 
+           navigator.userAgent.includes('wv') ||
+           'admob' in window;
+  }
+
+  // Initialize AdMob for native TWA
+  async initAdMob(config) {
+    try {
+      if (!window.admob) {
+        console.warn('⚠️ AdMob plugin not available');
+        return false;
+      }
+
+      await window.admob.start();
+      
+      // Configure ad units
+      this.adUnits.banner = config.bannerId || this.testIds.banner;
+      this.adUnits.interstitial = config.interstitialId || this.testIds.interstitial;
+      this.adUnits.rewarded = config.rewardedId || this.testIds.rewarded;
+      
+      console.log('✅ AdMob initialized for native app');
+      return true;
+    } catch (error) {
+      console.error('❌ AdMob initialization failed:', error);
+      return false;
+    }
+  }
+
+  // Initialize AdSense for web PWA
+  async initAdSense(config) {
+    try {
+      // Load AdSense script
+      if (!window.adsbygoogle) {
+        await this.loadAdSenseScript(config.publisherId);
+      }
+      
+      // Initialize AdSense
+      (window.adsbygoogle = window.adsbygoogle || []).push({
+        google_ad_client: config.publisherId || "ca-pub-0000000000000000",
+        enable_page_level_ads: true
+      });
+      
+      console.log('✅ AdSense initialized for web');
+      return true;
+    } catch (error) {
+      console.error('❌ AdSense initialization failed:', error);
+      return false;
+    }
+  }
+
+  // Load AdSense script dynamically
+  loadAdSenseScript(publisherId) {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
+      script.async = true;
+      script.crossOrigin = 'anonymous';
+      
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error('Failed to load AdSense script'));
+      
+      document.head.appendChild(script);
+    });
+  }
+
+  // Show banner ad
+  async showBanner(options = {}) {
+    try {
+      if (this.isNativeApp()) {
+        return await this.showAdMobBanner(options);
+      } else {
+        return await this.showAdSenseBanner(options);
+      }
+    } catch (error) {
+      console.error('❌ Failed to show banner:', error);
+      return false;
+    }
+  }
+
+  // Show AdMob banner (native)
+  async showAdMobBanner(options) {
+    if (!window.admob) return false;
+    
+    const bannerConfig = {
+      adUnitId: this.adUnits.banner,
+      position: options.position || 'bottom',
+      size: options.size || 'SMART_BANNER',
+      ...options
+    };
+    
+    await window.admob.banner.show(bannerConfig);
+    console.log('📱 AdMob banner shown');
+    return true;
+  }
+
+  // Show AdSense banner (web)
+  async showAdSenseBanner(options) {
+    // Create banner container if doesn't exist
+    let container = document.getElementById(options.containerId || 'ad-banner-container');
+    if (!container) {
+      container = document.createElement('div');
+      container.id = options.containerId || 'ad-banner-container';
+      container.style.textAlign = 'center';
+      container.style.margin = '10px 0';
+      
+      // Append to specified parent or body
+      const parent = options.parent ? document.querySelector(options.parent) : document.body;
+      parent.appendChild(container);
+    }
+    
+    // Create ad element
+    const adElement = document.createElement('ins');
+    adElement.className = 'adsbygoogle';
+    adElement.style.display = 'block';
+    adElement.setAttribute('data-ad-client', options.publisherId || 'ca-pub-0000000000000000');
+    adElement.setAttribute('data-ad-slot', options.adSlot || '0000000000');
+    adElement.setAttribute('data-ad-format', options.format || 'auto');
+    adElement.setAttribute('data-full-width-responsive', 'true');
+    
+    container.appendChild(adElement);
+    
+    // Push ad
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    
+    console.log('🌐 AdSense banner shown');
+    return true;
+  }
+
+  // Show interstitial ad
+  async showInterstitial() {
+    try {
+      if (this.isNativeApp()) {
+        return await this.showAdMobInterstitial();
+      } else {
+        return await this.showAdSenseInterstitial();
+      }
+    } catch (error) {
+      console.error('❌ Failed to show interstitial:', error);
+      return false;
+    }
+  }
+
+  // Show AdMob interstitial (native)
+  async showAdMobInterstitial() {
+    if (!window.admob) return false;
+    
+    // Load and show interstitial
+    await window.admob.interstitial.load(this.adUnits.interstitial);
+    await window.admob.interstitial.show();
+    
+    console.log('📱 AdMob interstitial shown');
+    return true;
+  }
+
+  // Show AdSense interstitial (web) - using overlay
+  async showAdSenseInterstitial() {
+    // Create overlay
+    const overlay = document.createElement('div');
+    overlay.style.cssText = `
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.8);
+      z-index: 9999;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    `;
+    
+    // Create ad container
+    const adContainer = document.createElement('div');
+    adContainer.style.cssText = `
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      max-width: 90%;
+      max-height: 90%;
+      position: relative;
+    `;
+    
+    // Close button
+    const closeBtn = document.createElement('button');
+    closeBtn.innerHTML = '×';
+    closeBtn.style.cssText = `
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: none;
+      border: none;
+      font-size: 24px;
+      cursor: pointer;
+    `;
+    closeBtn.onclick = () => document.body.removeChild(overlay);
+    
+    // Ad element
+    const adElement = document.createElement('ins');
+    adElement.className = 'adsbygoogle';
+    adElement.style.display = 'block';
+    adElement.setAttribute('data-ad-client', 'ca-pub-0000000000000000');
+    adElement.setAttribute('data-ad-slot', '0000000000');
+    adElement.setAttribute('data-ad-format', 'fluid');
+    
+    adContainer.appendChild(closeBtn);
+    adContainer.appendChild(adElement);
+    overlay.appendChild(adContainer);
+    document.body.appendChild(overlay);
+    
+    // Push ad
+    (window.adsbygoogle = window.adsbygoogle || []).push({});
+    
+    // Auto close after 5 seconds
+    setTimeout(() => {
+      if (document.body.contains(overlay)) {
+        document.body.removeChild(overlay);
+      }
+    }, 5000);
+    
+    console.log('🌐 AdSense interstitial shown');
+    return true;
+  }
+
+  // Hide banner
+  async hideBanner() {
+    try {
+      if (this.isNativeApp() && window.admob) {
+        await window.admob.banner.hide();
+        console.log('📱 AdMob banner hidden');
+      } else {
+        const container = document.getElementById('ad-banner-container');
+        if (container) {
+          container.style.display = 'none';
+          console.log('🌐 AdSense banner hidden');
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to hide banner:', error);
+      return false;
+    }
+  }
+
+  // Remove banner completely
+  async removeBanner() {
+    try {
+      if (this.isNativeApp() && window.admob) {
+        await window.admob.banner.remove();
+      } else {
+        const container = document.getElementById('ad-banner-container');
+        if (container) {
+          container.remove();
+        }
+      }
+      return true;
+    } catch (error) {
+      console.error('❌ Failed to remove banner:', error);
+      return false;
+    }
+  }
+
+  // Get configuration for real deployment
+  getProductionConfig() {
+    return {
+      // Replace these with your real AdMob/AdSense IDs
+      publisherId: 'ca-pub-YOUR-PUBLISHER-ID',
+      adUnits: {
+        banner: 'ca-app-pub-YOUR-PUBLISHER-ID/BANNER-AD-UNIT-ID',
+        interstitial: 'ca-app-pub-YOUR-PUBLISHER-ID/INTERSTITIAL-AD-UNIT-ID',
+        rewarded: 'ca-app-pub-YOUR-PUBLISHER-ID/REWARDED-AD-UNIT-ID'
+      }
+    };
+  }
+
+  // Helper to check if ads are ready
+  isReady() {
+    if (this.isNativeApp()) {
+      return !!window.admob;
+    } else {
+      return !!window.adsbygoogle;
+    }
+  }
+
+  // Get ad revenue (if available)
+  async getRevenue() {
+    try {
+      if (this.isNativeApp() && window.admob && window.admob.getRevenue) {
+        return await window.admob.getRevenue();
+      }
+      return null;
+    } catch (error) {
+      console.error('❌ Failed to get revenue:', error);
+      return null;
+    }
+  }
+}
+
+// Export singleton instance
+const adMob = new AdMobManager();
+export default adMob;

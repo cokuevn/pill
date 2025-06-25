@@ -90,13 +90,25 @@ class AdMobManager {
   // Load AdSense script dynamically
   loadAdSenseScript(publisherId) {
     return new Promise((resolve, reject) => {
+      // Check if script already loaded
+      if (document.querySelector(`script[src*="${publisherId}"]`)) {
+        resolve();
+        return;
+      }
+      
       const script = document.createElement('script');
       script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${publisherId}`;
       script.async = true;
       script.crossOrigin = 'anonymous';
       
-      script.onload = () => resolve();
-      script.onerror = () => reject(new Error('Failed to load AdSense script'));
+      script.onload = () => {
+        console.log('✅ AdSense script loaded');
+        resolve();
+      };
+      script.onerror = () => {
+        console.error('❌ Failed to load AdSense script');
+        reject(new Error('Failed to load AdSense script'));
+      };
       
       document.head.appendChild(script);
     });

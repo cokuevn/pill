@@ -908,21 +908,30 @@ function App() {
     }
   };
 
-  // Delete pill
-  const deletePill = (pillId) => {
-    const newPills = pills.filter(pill => pill.id !== pillId);
-    setPills(newPills);
-    storage.set(STORAGE_KEYS.PILLS, newPills);
+  // Delete pill with IndexedDB
+  const deletePill = async (pillId) => {
+    try {
+      // Delete from IndexedDB
+      await storage.deletePill(pillId);
+      
+      // Update state
+      const newPills = pills.filter(pill => pill.id !== pillId);
+      setPills(newPills);
 
-    // Remove from taken today
-    const newTaken = { ...takenToday };
-    Object.keys(newTaken).forEach(key => {
-      if (key.endsWith(`_${pillId}`)) {
-        delete newTaken[key];
-      }
-    });
-    setTakenToday(newTaken);
-    storage.set(STORAGE_KEYS.TAKEN_TODAY, newTaken);
+      // Update taken today state (remove records for this pill)
+      const newTaken = { ...takenToday };
+      Object.keys(newTaken).forEach(key => {
+        if (key.endsWith(`_${pillId}`)) {
+          delete newTaken[key];
+        }
+      });
+      setTakenToday(newTaken);
+      
+      console.log('✅ Pill deleted from IndexedDB:', pillId);
+    } catch (error) {
+      console.error('❌ Error deleting pill:', error);
+      alert('Error deleting medication. Please try again.');
+    }
   };
 
   // Clear all data

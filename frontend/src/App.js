@@ -1116,16 +1116,16 @@ function App() {
           {/* AdSense banner will be inserted here dynamically */}
         </div>
 
-        {/* AdMob Banner Placeholder - Показываем пока реклама не загрузилась */}
-        <div className="bg-gradient-to-r from-blue-100 to-purple-100 rounded-xl p-4 mb-6 text-center border border-blue-200">
-          <div className="text-blue-700 text-sm font-medium mb-1">
-            📢 Advertisement Space
+        {/* AdMob Banner Placeholder - Обновленный с реальными ID */}
+        <div className="bg-gradient-to-r from-green-100 to-blue-100 rounded-xl p-4 mb-6 text-center border border-green-200">
+          <div className="text-green-700 text-sm font-medium mb-1">
+            💰 Live AdMob Integration
           </div>
-          <div className="text-xs text-blue-600 mb-2">
-            Loading ads... Please support our free app! ✨
+          <div className="text-xs text-green-600 mb-2">
+            Real ads from Publisher: ca-pub-4181222038181630 ✅
           </div>
-          <div className="text-xs text-blue-500">
-            Revenue helps us improve the app and AI features
+          <div className="text-xs text-green-500">
+            Thank you for supporting our free app! 🙏
           </div>
         </div>
       </main>

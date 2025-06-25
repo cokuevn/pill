@@ -846,6 +846,13 @@ function App() {
         console.log('- Pills:', savedPills.length);
         console.log('- Premium status:', savedPremium);
         
+        // TEMPORARY: Force premium to false for testing
+        if (savedPremium) {
+          console.log('🔧 Forcing premium to false for testing');
+          await storage.setPremiumStatus(false);
+          setIsPremium(false);
+        }
+        
         // Get storage info
         const storageInfo = await storage.getStorageInfo();
         console.log('📊 Storage info:', storageInfo);

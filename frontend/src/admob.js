@@ -146,35 +146,72 @@ class AdMobManager {
 
   // Show AdSense banner (web)
   async showAdSenseBanner(options) {
-    // Create banner container if doesn't exist
-    let container = document.getElementById(options.containerId || 'ad-banner-container');
-    if (!container) {
-      container = document.createElement('div');
-      container.id = options.containerId || 'ad-banner-container';
-      container.style.textAlign = 'center';
-      container.style.margin = '10px 0';
+    try {
+      // Create banner container if doesn't exist
+      let container = document.getElementById(options.containerId || 'ad-banner-container');
+      if (!container) {
+        container = document.createElement('div');
+        container.id = options.containerId || 'ad-banner-container';
+        container.style.textAlign = 'center';
+        container.style.margin = '10px 0';
+        
+        // Append to specified parent or body
+        const parent = options.parent ? document.querySelector(`#${options.parent}`) : document.body;
+        if (parent) {
+          parent.appendChild(container);
+        }
+      }
       
-      // Append to specified parent or body
-      const parent = options.parent ? document.querySelector(options.parent) : document.body;
-      parent.appendChild(container);
+      // Clear existing content
+      container.innerHTML = '';
+      
+      // Create ad element
+      const adElement = document.createElement('ins');
+      adElement.className = 'adsbygoogle';
+      adElement.style.display = 'block';
+      adElement.style.minHeight = '100px';
+      adElement.setAttribute('data-ad-client', options.publisherId || this.productionIds.publisherId);
+      adElement.setAttribute('data-ad-slot', options.adSlot || this.productionIds.banner.split('/')[1]);
+      adElement.setAttribute('data-ad-format', options.format || 'auto');
+      adElement.setAttribute('data-full-width-responsive', 'true');
+      
+      container.appendChild(adElement);
+      
+      // Wait for adsbygoogle to be available
+      let attempts = 0;
+      while (!window.adsbygoogle && attempts < 10) {
+        await new Promise(resolve => setTimeout(resolve, 500));
+        attempts++;
+      }
+      
+      if (!window.adsbygoogle) {
+        throw new Error('AdSense not loaded');
+      }
+      
+      // Push ad
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({});
+        console.log('🌐 AdSense banner requested');
+        
+        // Check if ad loaded after delay
+        setTimeout(() => {
+          const adIframe = container.querySelector('iframe');
+          if (!adIframe || adIframe.style.display === 'none') {
+            console.warn('⚠️ AdSense banner may not have loaded');
+            return false;
+          }
+        }, 2000);
+        
+        return true;
+      } catch (adError) {
+        console.error('❌ AdSense push failed:', adError);
+        return false;
+      }
+      
+    } catch (error) {
+      console.error('❌ AdSense banner error:', error);
+      return false;
     }
-    
-    // Create ad element
-    const adElement = document.createElement('ins');
-    adElement.className = 'adsbygoogle';
-    adElement.style.display = 'block';
-    adElement.setAttribute('data-ad-client', options.publisherId || this.productionIds.publisherId);
-    adElement.setAttribute('data-ad-slot', options.adSlot || this.productionIds.banner.split('/')[1]);
-    adElement.setAttribute('data-ad-format', options.format || 'auto');
-    adElement.setAttribute('data-full-width-responsive', 'true');
-    
-    container.appendChild(adElement);
-    
-    // Push ad
-    (window.adsbygoogle = window.adsbygoogle || []).push({});
-    
-    console.log('🌐 AdSense banner shown');
-    return true;
   }
 
   // Show interstitial ad

@@ -55,13 +55,25 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
 
   useEffect(() => {
     if (isOpen) {
-      // Get or create session ID
-      let session = storage.get(STORAGE_KEYS.AI_SESSION);
-      if (!session) {
-        session = `session_${Date.now()}`;
-        storage.set(STORAGE_KEYS.AI_SESSION, session);
-      }
-      setSessionId(session);
+      // Get or create session ID using IndexedDB
+      const initSession = async () => {
+        try {
+          let session = await storage.getAISessionId();
+          if (!session) {
+            session = `session_${Date.now()}`;
+            await storage.setAISessionId(session);
+          }
+          setSessionId(session);
+          console.log('🤖 AI session initialized:', session);
+        } catch (error) {
+          console.error('❌ Error initializing AI session:', error);
+          // Fallback to local session
+          const fallbackSession = `session_${Date.now()}`;
+          setSessionId(fallbackSession);
+        }
+      };
+      
+      initSession();
     }
   }, [isOpen]);
 

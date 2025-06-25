@@ -1202,6 +1202,8 @@ function App() {
         isOpen={showAddModal}
         onClose={() => setShowAddModal(false)}
         onAdd={addPill}
+        isPremium={isPremium}
+        pillCount={pills.length}
       />
 
       <SettingsModal

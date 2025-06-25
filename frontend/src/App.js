@@ -170,13 +170,44 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
     }
   };
 
-  const quickQuestions = [
-    "How do I add a new medication?",
-    "Why didn't I get a notification?",
-    "How do I delete a medication?",
-    "Can I change notification times?",
-    "What if I miss a dose?"
-  ];
+  const getQuickQuestions = (type) => {
+    switch(type) {
+      case 'support':
+        return [
+          "How do I add a new medication?",
+          "Why didn't I get a notification?",
+          "How do I delete a medication?",
+          "Can I change notification times?",
+          "What if I miss a dose?",
+          "How to install this app on my phone?",
+          "How to backup my medication data?"
+        ];
+      case 'recommendation':
+        return [
+          "What's the best time to take medications?",
+          "How to build a consistent medication routine?",
+          "Tips for remembering multiple medications",
+          "How to organize my medication schedule?",
+          "What to do if I forget a dose?",
+          "How to track medication effectiveness?",
+          "Best practices for pill organization"
+        ];
+      case 'general':
+        return [
+          "How do medications work in the body?",
+          "What are drug interactions?",
+          "When should I talk to my doctor?",
+          "How to store medications properly?",
+          "What are generic vs brand medications?",
+          "How to read medication labels?",
+          "What questions to ask my pharmacist?"
+        ];
+      default:
+        return [];
+    }
+  };
+
+  const quickQuestions = getQuickQuestions(chatType);
 
   if (!isOpen) return null;
 

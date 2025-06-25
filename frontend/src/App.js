@@ -8,7 +8,8 @@ const API = `${BACKEND_URL}/api`;
 const STORAGE_KEYS = {
   PILLS: 'pill_reminder_pills',
   TAKEN_TODAY: 'pill_reminder_taken_today',
-  AI_SESSION: 'pill_reminder_ai_session'
+  AI_SESSION: 'pill_reminder_ai_session',
+  PREMIUM: 'pill_reminder_premium'
 };
 
 // Pill data model

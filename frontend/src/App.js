@@ -880,21 +880,31 @@ function App() {
     return pills.filter(pill => pill.days.includes(today));
   };
 
-  // Add pill
-  const addPill = (pill) => {
-    const newPills = [...pills, pill];
-    setPills(newPills);
-    storage.set(STORAGE_KEYS.PILLS, newPills);
-    
-    // Schedule notifications
-    scheduleNotifications(pill);
+  // Add pill with IndexedDB
+  const addPill = async (pill) => {
+    try {
+      // Save to IndexedDB
+      await storage.addPill(pill);
+      
+      // Update state
+      const newPills = [...pills, pill];
+      setPills(newPills);
+      
+      // Schedule notifications
+      scheduleNotifications(pill);
 
-    // Show success message
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Medication Added! 💊', {
-        body: `${pill.name} has been added to your schedule`,
-        icon: '/manifest-icon-192.maskable.png'
-      });
+      // Show success message
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Medication Added! 💊', {
+          body: `${pill.name} has been added to your schedule`,
+          icon: '/manifest-icon-192.maskable.png'
+        });
+      }
+      
+      console.log('✅ Pill added to IndexedDB:', pill.name);
+    } catch (error) {
+      console.error('❌ Error adding pill:', error);
+      alert('Error saving medication. Please try again.');
     }
   };
 

@@ -792,9 +792,11 @@ const ProModal = ({ isOpen, onClose, onUpgrade }) => {
 function App() {
   const [pills, setPills] = useState([]);
   const [takenToday, setTakenToday] = useState({});
+  const [isPremium, setIsPremium] = useState(false);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
+  const [showProModal, setShowProModal] = useState(false);
 
   // Check URL parameters for shortcuts
   useEffect(() => {

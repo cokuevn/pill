@@ -895,6 +895,21 @@ function App() {
     localStorage.removeItem(STORAGE_KEYS.AI_SESSION);
   };
 
+  // Upgrade to PRO
+  const upgradeToPro = () => {
+    setIsPremium(true);
+    storage.set('pill_reminder_premium', true);
+    setShowProModal(false);
+    
+    // Show success notification
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('Welcome to PRO! 🎉', {
+        body: 'You now have unlimited access to all AI features!',
+        icon: '/manifest-icon-192.maskable.png'
+      });
+    }
+  };
+
   // Mark pill as taken
   const takePill = (pillId) => {
     const today = new Date().toDateString();

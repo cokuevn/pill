@@ -11,11 +11,11 @@ class AdMobManager {
       rewarded: null
     };
     
-    // Test IDs - replace with real IDs in production
-    this.testIds = {
-      banner: 'ca-app-pub-3940256099942544/6300978111',
-      interstitial: 'ca-app-pub-3940256099942544/1033173712',
-      rewarded: 'ca-app-pub-3940256099942544/5224354917'
+    // Real Production IDs - provided by user
+    this.productionIds = {
+      publisherId: 'ca-pub-4181222038181630',
+      banner: 'ca-app-pub-4181222038181630/7332397743',
+      interstitial: 'ca-app-pub-4181222038181630/5191667171'
     };
   }
 

@@ -53,10 +53,9 @@ class AdMobManager {
 
       await window.admob.start();
       
-      // Configure ad units
-      this.adUnits.banner = config.bannerId || this.testIds.banner;
-      this.adUnits.interstitial = config.interstitialId || this.testIds.interstitial;
-      this.adUnits.rewarded = config.rewardedId || this.testIds.rewarded;
+      // Configure ad units with real IDs
+      this.adUnits.banner = config.bannerId || this.productionIds.banner;
+      this.adUnits.interstitial = config.interstitialId || this.productionIds.interstitial;
       
       console.log('✅ AdMob initialized for native app');
       return true;

@@ -1017,7 +1017,10 @@ function App() {
             <div className="flex items-center space-x-2">
               {!isPremium && (
                 <button
-                  onClick={() => setShowProModal(true)}
+                  onClick={() => {
+                    console.log('PRO button clicked!'); // Debug
+                    setShowProModal(true);
+                  }}
                   className="px-3 py-1 bg-gradient-to-r from-purple-500 to-pink-500 text-white text-xs rounded-full font-medium hover:from-purple-600 hover:to-pink-600 transition-all transform hover:scale-105"
                 >
                   ⭐ PRO

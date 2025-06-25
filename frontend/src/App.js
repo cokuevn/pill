@@ -736,11 +736,13 @@ function App() {
     loadData();
   }, []);
 
-  // Register Service Worker
+  // Register Service Worker and initialize ads
   useEffect(() => {
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js')
-        .then((registration) => {
+    const initServices = async () => {
+      // Register Service Worker
+      if ('serviceWorker' in navigator) {
+        try {
+          const registration = await navigator.serviceWorker.register('/sw.js');
           console.log('✅ SW registered successfully:', registration);
           
           // Handle service worker messages
@@ -749,18 +751,45 @@ function App() {
               takePill(event.data.pillId);
             }
           });
-        })
-        .catch((error) => {
+        } catch (error) {
           console.log('❌ SW registration failed:', error);
-        });
-    }
-    
-    // Request notification permission
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then((permission) => {
+        }
+      }
+      
+      // Request notification permission
+      if ('Notification' in window && Notification.permission === 'default') {
+        const permission = await Notification.requestPermission();
         console.log('Notification permission:', permission);
-      });
-    }
+      }
+
+      // Initialize AdMob/AdSense
+      try {
+        const adConfig = {
+          publisherId: 'ca-pub-0000000000000000', // Replace with real ID
+          bannerId: 'ca-app-pub-3940256099942544/6300978111', // Test ID
+          interstitialId: 'ca-app-pub-3940256099942544/1033173712' // Test ID
+        };
+        
+        const adInitialized = await adMob.init(adConfig);
+        if (adInitialized) {
+          console.log('✅ Ad system initialized');
+          
+          // Show banner ad after 3 seconds
+          setTimeout(() => {
+            adMob.showBanner({
+              containerId: 'main-ad-banner',
+              parent: 'main',
+              adSlot: '0000000000', // Replace with real slot
+              format: 'rectangle'
+            });
+          }, 3000);
+        }
+      } catch (error) {
+        console.error('❌ Ad initialization failed:', error);
+      }
+    };
+
+    initServices();
   }, []);
 
   // Get today's pills

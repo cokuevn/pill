@@ -637,9 +637,10 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
             <h3 className="font-medium text-gray-900 mb-2">App Information</h3>
             <div className="space-y-1 text-sm text-gray-600">
               <p>Total Medications: {pillCount}</p>
-              <p>Version: 1.0.0</p>
+              <p>Version: 1.1.0 (Production)</p>
               <p>Storage: IndexedDB (offline-ready)</p>
               <p>AI: GPT-4o powered assistant</p>
+              <p>Ads: Live AdMob Integration ✅</p>
             </div>
           </div>
 

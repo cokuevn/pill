@@ -810,9 +810,11 @@ function App() {
   useEffect(() => {
     const savedPills = storage.get(STORAGE_KEYS.PILLS) || [];
     const savedTaken = storage.get(STORAGE_KEYS.TAKEN_TODAY) || {};
+    const savedPremium = storage.get('pill_reminder_premium') || false;
     
     setPills(savedPills);
     setTakenToday(savedTaken);
+    setIsPremium(savedPremium);
   }, []);
 
   // Register Service Worker

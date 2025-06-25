@@ -952,20 +952,28 @@ function App() {
     }
   };
 
-  // Upgrade to PRO
-  const upgradeToPro = () => {
-    setIsPremium(true);
-    storage.set(STORAGE_KEYS.PREMIUM, true);
-    setShowProModal(false);
-    
-    console.log('Upgraded to PRO!'); // Debug
-    
-    // Show success notification
-    if ('Notification' in window && Notification.permission === 'granted') {
-      new Notification('Welcome to PRO! 🎉', {
-        body: 'You now have unlimited access to all AI features!',
-        icon: '/manifest-icon-192.maskable.png'
-      });
+  // Upgrade to PRO with IndexedDB
+  const upgradeToPro = async () => {
+    try {
+      // Save to IndexedDB
+      await storage.setPremiumStatus(true);
+      
+      // Update state
+      setIsPremium(true);
+      setShowProModal(false);
+      
+      console.log('✅ Upgraded to PRO in IndexedDB');
+      
+      // Show success notification
+      if ('Notification' in window && Notification.permission === 'granted') {
+        new Notification('Welcome to PRO! 🎉', {
+          body: 'You now have unlimited access to all AI features!',
+          icon: '/manifest-icon-192.maskable.png'
+        });
+      }
+    } catch (error) {
+      console.error('❌ Error upgrading to PRO:', error);
+      alert('Error upgrading to PRO. Please try again.');
     }
   };
 

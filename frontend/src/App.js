@@ -1075,7 +1075,7 @@ function App() {
               <p className="text-gray-500 text-sm mb-4">
                 Enjoy your medication-free day or add new medications
               </p>
-              <div className="space-y-2">
+              <div className="flex flex-col space-y-2">
                 <button
                   onClick={() => setShowAddModal(true)}
                   className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all transform hover:scale-105"
@@ -1086,6 +1086,7 @@ function App() {
                   <button
                     onClick={() => setShowAIChat(true)}
                     className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all transform hover:scale-105"
+                    style={{marginTop: '10px'}}
                   >
                     🤖 Ask AI for Help
                   </button>

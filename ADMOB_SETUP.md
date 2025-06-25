@@ -64,18 +64,26 @@ adMob.showBanner({
 - Native interstitial ad experience
 - Better performance and revenue
 
-## 🎮 Current Test Configuration
+## 🎯 Current Production Configuration
 
-The app is configured with **Google's test ad units**, which are safe for development:
+✅ **REAL AdMob IDs CONFIGURED:**
 
 ```javascript
-// Test IDs currently in use:
-testIds = {
-  banner: 'ca-app-pub-3940256099942544/6300978111',
-  interstitial: 'ca-app-pub-3940256099942544/1033173712',
-  rewarded: 'ca-app-pub-3940256099942544/5224354917'
-}
+// Production IDs (ACTIVE):
+Publisher ID: ca-pub-4181222038181630
+Banner Ad Unit: ca-app-pub-4181222038181630/7332397743  
+Interstitial Ad Unit: ca-app-pub-4181222038181630/5191667171
 ```
+
+## 💰 Live Revenue Tracking
+
+The app is now configured with **real AdMob IDs** and will generate **actual revenue**:
+
+- ✅ **Real Publisher ID**: ca-pub-4181222038181630
+- ✅ **Real Banner Unit**: 7332397743
+- ✅ **Real Interstitial Unit**: 5191667171
+- ✅ **Revenue tracking**: Active
+- ✅ **Policy compliance**: Maintained
 
 ## 💰 Revenue Optimization
 

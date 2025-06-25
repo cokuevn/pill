@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 
+const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
+const API = `${BACKEND_URL}/api`;
+
 // Data storage utilities
 const STORAGE_KEYS = {
   PILLS: 'pill_reminder_pills',
-  TAKEN_TODAY: 'pill_reminder_taken_today'
+  TAKEN_TODAY: 'pill_reminder_taken_today',
+  AI_SESSION: 'pill_reminder_ai_session'
 };
 
 // Pill data model
@@ -56,12 +60,272 @@ const PWAStatus = () => {
   if (!isOnline) {
     return (
       <div className="bg-amber-500 text-white text-center py-2 text-sm">
-        📶 Offline mode - Data saved locally
+        📶 Offline mode - AI features unavailable
       </div>
     );
   }
 
   return null;
+};
+
+// AI Chat Component
+const AIChatModal = ({ isOpen, onClose, pills }) => {
+  const [messages, setMessages] = useState([]);
+  const [currentMessage, setCurrentMessage] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [sessionId, setSessionId] = useState('');
+  const [chatType, setChatType] = useState('support'); // 'support', 'recommendation', 'general'
+
+  useEffect(() => {
+    if (isOpen) {
+      // Get or create session ID
+      let session = storage.get(STORAGE_KEYS.AI_SESSION);
+      if (!session) {
+        session = `session_${Date.now()}`;
+        storage.set(STORAGE_KEYS.AI_SESSION, session);
+      }
+      setSessionId(session);
+    }
+  }, [isOpen]);
+
+  const sendMessage = async () => {
+    if (!currentMessage.trim() || loading) return;
+
+    const userMessage = currentMessage.trim();
+    setCurrentMessage('');
+    setMessages(prev => [...prev, { type: 'user', content: userMessage }]);
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${API}/ai/chat`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          message: userMessage,
+          session_id: sessionId,
+          message_type: chatType,
+          user_medications: pills.map(pill => ({
+            id: pill.id,
+            name: pill.name,
+            time: pill.time,
+            days: pill.days
+          }))
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to get AI response');
+
+      const data = await response.json();
+      setMessages(prev => [...prev, { type: 'ai', content: data.response }]);
+    } catch (error) {
+      console.error('AI Chat error:', error);
+      setMessages(prev => [...prev, { 
+        type: 'ai', 
+        content: 'Sorry, I\'m having trouble connecting right now. Please try again later.' 
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getRecommendations = async () => {
+    if (pills.length === 0) {
+      setMessages(prev => [...prev, { 
+        type: 'ai', 
+        content: 'You don\'t have any medications added yet. Add some medications first, and I\'ll provide personalized recommendations!' 
+      }]);
+      return;
+    }
+
+    setLoading(true);
+    setMessages(prev => [...prev, { type: 'user', content: 'Get personalized recommendations' }]);
+
+    try {
+      const response = await fetch(`${API}/ai/recommendations`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          medications: pills.map(pill => ({
+            id: pill.id,
+            name: pill.name,
+            time: pill.time,
+            days: pill.days
+          })),
+          session_id: sessionId
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to get recommendations');
+
+      const data = await response.json();
+      setMessages(prev => [...prev, { type: 'ai', content: data.response }]);
+    } catch (error) {
+      console.error('AI Recommendations error:', error);
+      setMessages(prev => [...prev, { 
+        type: 'ai', 
+        content: 'Sorry, I couldn\'t generate recommendations right now. Please try again later.' 
+      }]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const quickQuestions = [
+    "How do I add a new medication?",
+    "Why didn't I get a notification?",
+    "How do I delete a medication?",
+    "Can I change notification times?",
+    "What if I miss a dose?"
+  ];
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
+      <div className="bg-white rounded-2xl w-full max-w-md h-[80vh] flex flex-col animate-slide-up">
+        {/* Header */}
+        <div className="flex justify-between items-center p-4 border-b">
+          <div>
+            <h2 className="text-xl font-bold text-gray-900">🤖 AI Assistant</h2>
+            <p className="text-sm text-gray-500">Ask me anything about your medications!</p>
+          </div>
+          <button
+            onClick={onClose}
+            className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
+          >
+            ×
+          </button>
+        </div>
+
+        {/* Chat Type Selector */}
+        <div className="p-3 border-b bg-gray-50">
+          <div className="flex space-x-2 text-xs">
+            <button
+              onClick={() => setChatType('support')}
+              className={`px-3 py-1 rounded-full transition-colors ${
+                chatType === 'support' 
+                  ? 'bg-blue-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              🛠️ Support
+            </button>
+            <button
+              onClick={() => setChatType('recommendation')}
+              className={`px-3 py-1 rounded-full transition-colors ${
+                chatType === 'recommendation' 
+                  ? 'bg-green-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              💡 Tips
+            </button>
+            <button
+              onClick={() => setChatType('general')}
+              className={`px-3 py-1 rounded-full transition-colors ${
+                chatType === 'general' 
+                  ? 'bg-purple-500 text-white' 
+                  : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+              }`}
+            >
+              💬 General
+            </button>
+          </div>
+        </div>
+
+        {/* Messages */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
+          {messages.length === 0 && (
+            <div className="text-center py-8">
+              <div className="text-4xl mb-4">🤖</div>
+              <h3 className="font-medium text-gray-900 mb-2">Hello! I'm your AI assistant</h3>
+              <p className="text-gray-600 text-sm mb-4">
+                I can help you with app questions, medication tips, and general wellness advice.
+              </p>
+              
+              {/* Quick Actions */}
+              <div className="space-y-2">
+                <button
+                  onClick={getRecommendations}
+                  disabled={pills.length === 0}
+                  className="w-full px-4 py-2 bg-gradient-to-r from-green-500 to-blue-500 text-white rounded-xl hover:from-green-600 hover:to-blue-600 disabled:from-gray-300 disabled:to-gray-400 disabled:cursor-not-allowed transition-all"
+                >
+                  ✨ Get Personalized Tips ({pills.length} medications)
+                </button>
+              </div>
+
+              {/* Quick Questions */}
+              <div className="mt-6 text-left">
+                <p className="text-xs text-gray-500 mb-2">Quick questions:</p>
+                <div className="space-y-1">
+                  {quickQuestions.map((question, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentMessage(question)}
+                      className="w-full text-left text-sm text-blue-600 hover:text-blue-700 hover:bg-blue-50 px-2 py-1 rounded transition-colors"
+                    >
+                      {question}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {messages.map((message, index) => (
+            <div
+              key={index}
+              className={`flex ${message.type === 'user' ? 'justify-end' : 'justify-start'}`}
+            >
+              <div
+                className={`max-w-[80%] p-3 rounded-2xl ${
+                  message.type === 'user'
+                    ? 'bg-blue-500 text-white'
+                    : 'bg-gray-100 text-gray-900'
+                }`}
+              >
+                <div className="whitespace-pre-wrap text-sm">{message.content}</div>
+              </div>
+            </div>
+          ))}
+
+          {loading && (
+            <div className="flex justify-start">
+              <div className="bg-gray-100 p-3 rounded-2xl">
+                <div className="flex space-x-1">
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.1s'}}></div>
+                  <div className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{animationDelay: '0.2s'}}></div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Input */}
+        <div className="p-4 border-t">
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              value={currentMessage}
+              onChange={(e) => setCurrentMessage(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && sendMessage()}
+              placeholder="Ask me anything..."
+              className="flex-1 px-4 py-2 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-sm"
+              disabled={loading}
+            />
+            <button
+              onClick={sendMessage}
+              disabled={!currentMessage.trim() || loading}
+              className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            >
+              {loading ? '...' : '→'}
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 // Add Pill Modal Component
@@ -324,6 +588,7 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
               <p>Total Medications: {pillCount}</p>
               <p>Version: 1.0.0</p>
               <p>Storage: Local (offline-ready)</p>
+              <p>AI: GPT-4o powered assistant</p>
             </div>
           </div>
 
@@ -349,14 +614,14 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
             </div>
           </div>
 
-          {/* Future monetization placeholder */}
+          {/* AI Features */}
           <div className="bg-blue-50 rounded-xl p-4">
-            <h3 className="font-medium text-blue-900 mb-2">🚀 Coming Soon</h3>
+            <h3 className="font-medium text-blue-900 mb-2">🤖 AI Features</h3>
             <div className="space-y-1 text-sm text-blue-700">
-              <p>• Advanced analytics</p>
-              <p>• Medication history</p>
-              <p>• Custom reminders</p>
-              <p>• Export data</p>
+              <p>• Smart medication recommendations</p>
+              <p>• 24/7 support chat</p>
+              <p>• Personalized wellness tips</p>
+              <p>• Schedule optimization advice</p>
             </div>
           </div>
         </div>
@@ -378,6 +643,7 @@ function App() {
   const [takenToday, setTakenToday] = useState({});
   const [showAddModal, setShowAddModal] = useState(false);
   const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [showAIChat, setShowAIChat] = useState(false);
 
   // Check URL parameters for shortcuts
   useEffect(() => {
@@ -470,6 +736,8 @@ function App() {
     setTakenToday({});
     storage.set(STORAGE_KEYS.PILLS, []);
     storage.set(STORAGE_KEYS.TAKEN_TODAY, {});
+    // Clear AI session too
+    localStorage.removeItem(STORAGE_KEYS.AI_SESSION);
   };
 
   // Mark pill as taken
@@ -545,19 +813,46 @@ function App() {
                 })}
               </p>
             </div>
-            <button
-              onClick={() => setShowSettingsModal(true)}
-              className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
-              title="Settings"
-            >
-              ⚙️
-            </button>
+            <div className="flex items-center space-x-2">
+              <button
+                onClick={() => setShowAIChat(true)}
+                className="p-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all transform hover:scale-105"
+                title="AI Assistant"
+              >
+                🤖
+              </button>
+              <button
+                onClick={() => setShowSettingsModal(true)}
+                className="p-2 text-gray-400 hover:text-gray-600 transition-colors"
+                title="Settings"
+              >
+                ⚙️
+              </button>
+            </div>
           </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="max-w-md mx-auto px-4 py-6">
+        {/* AI Quick Tips */}
+        {pills.length > 0 && navigator.onLine && (
+          <div className="mb-6 bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-medium text-blue-900 mb-1">🤖 AI Assistant</h3>
+                <p className="text-sm text-blue-700">Get personalized tips and support</p>
+              </div>
+              <button
+                onClick={() => setShowAIChat(true)}
+                className="px-3 py-1 bg-white text-blue-600 rounded-lg text-sm font-medium hover:bg-blue-50 transition-colors"
+              >
+                Chat Now
+              </button>
+            </div>
+          </div>
+        )}
+
         {/* Today's Pills */}
         <div className="mb-8">
           <div className="flex items-center justify-between mb-4">
@@ -580,12 +875,22 @@ function App() {
               <p className="text-gray-500 text-sm mb-4">
                 Enjoy your medication-free day or add new medications
               </p>
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all transform hover:scale-105"
-              >
-                Add First Medication
-              </button>
+              <div className="space-y-2">
+                <button
+                  onClick={() => setShowAddModal(true)}
+                  className="px-4 py-2 bg-blue-500 text-white rounded-xl hover:bg-blue-600 transition-all transform hover:scale-105"
+                >
+                  Add First Medication
+                </button>
+                {navigator.onLine && (
+                  <button
+                    onClick={() => setShowAIChat(true)}
+                    className="px-4 py-2 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-xl hover:from-purple-600 hover:to-blue-600 transition-all transform hover:scale-105"
+                  >
+                    🤖 Ask AI for Help
+                  </button>
+                )}
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
@@ -674,6 +979,17 @@ function App() {
         +
       </button>
 
+      {/* AI Chat Button (floating) */}
+      {navigator.onLine && (
+        <button
+          onClick={() => setShowAIChat(true)}
+          className="fixed bottom-6 left-6 w-12 h-12 bg-gradient-to-r from-purple-500 to-blue-500 text-white rounded-full shadow-lg hover:shadow-xl flex items-center justify-center text-lg z-40 transition-all transform hover:scale-110 active:scale-95"
+          title="AI Assistant"
+        >
+          🤖
+        </button>
+      )}
+
       {/* Modals */}
       <AddPillModal
         isOpen={showAddModal}
@@ -686,6 +1002,12 @@ function App() {
         onClose={() => setShowSettingsModal(false)}
         onClearData={clearAllData}
         pillCount={pills.length}
+      />
+
+      <AIChatModal
+        isOpen={showAIChat}
+        onClose={() => setShowAIChat(false)}
+        pills={pills}
       />
     </div>
   );

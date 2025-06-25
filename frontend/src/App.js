@@ -1175,6 +1175,23 @@ function App() {
             </div>
           </div>
         </div>
+        {/* AdMob Banner Placeholder (Free version only) */}
+        {!isPremium && pills.length > 0 && (
+          <div className="bg-gray-100 rounded-xl p-4 mb-6 text-center border-2 border-dashed border-gray-300">
+            <div className="text-gray-500 text-sm font-medium mb-1">
+              📢 Advertisement
+            </div>
+            <div className="text-xs text-gray-400 mb-2">
+              Support us by viewing ads or upgrade to PRO to remove them
+            </div>
+            <button
+              onClick={() => setShowProModal(true)}
+              className="px-3 py-1 bg-blue-500 text-white text-xs rounded-full hover:bg-blue-600 transition-colors"
+            >
+              Remove Ads - Go PRO
+            </button>
+          </div>
+        )}
       </main>
 
       {/* Add Button */}

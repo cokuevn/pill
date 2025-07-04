@@ -208,3 +208,5 @@ test_plan:
 agent_communication:
   - agent: "main"
     message: "Исправил проблемы с иконками PWA и Service Worker. AdSense ошибки нормальны до одобрения аккаунта Google. Готов для тестирования фронтенда."
+  - agent: "main"
+    message: "Исправил черный экран ошибок React при перезагрузке. Добавил глобальный обработчик AdSense ошибок и улучшил error handling. Теперь AdSense ошибки не будут показывать экран ошибок React."

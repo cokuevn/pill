@@ -148,6 +148,21 @@ frontend:
         agent: "main"
         comment: "Убрал ненужный preload тег из index.html"
         
+  - task: "AdSense Integration"
+    implemented: true
+    working: false
+    file: "frontend/src/admob.js"
+    stuck_count: 1
+    priority: "low"
+    needs_retesting: false
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "AdSense показывает 400 ошибки, реклама не отображается"
+      - working: false
+        agent: "main"
+        comment: "Это ожидаемое поведение - Google AdSense аккаунт еще не одобрен"
+        
   - task: "React Error Screen Prevention"
     implemented: true
     working: true

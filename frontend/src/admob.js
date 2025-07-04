@@ -109,9 +109,10 @@ class AdMobManager {
         console.log('✅ AdSense script loaded');
         resolve();
       };
-      script.onerror = () => {
-        console.error('❌ Failed to load AdSense script');
-        reject(new Error('Failed to load AdSense script'));
+      script.onerror = (error) => {
+        console.warn('⚠️ AdSense script failed to load (expected until approved)');
+        // Don't reject - just resolve so app continues working
+        resolve();
       };
       
       document.head.appendChild(script);

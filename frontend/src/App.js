@@ -697,6 +697,36 @@ function App() {
   const [showSettingsModal, setShowSettingsModal] = useState(false);
   const [showAIChat, setShowAIChat] = useState(false);
 
+  // Global error handler for AdSense to prevent React error screen
+  useEffect(() => {
+    const handleAdSenseError = (event) => {
+      // Check if error is related to AdSense
+      if (event.error && 
+          (event.error.message?.includes('adsbygoogle') || 
+           event.error.message?.includes('googlesyndication') ||
+           event.error.stack?.includes('adsbygoogle'))) {
+        console.warn('⚠️ AdSense error caught (expected until approved):', event.error.message);
+        event.preventDefault(); // Prevent React error screen
+        return true;
+      }
+      return false;
+    };
+
+    window.addEventListener('error', handleAdSenseError);
+    window.addEventListener('unhandledrejection', (event) => {
+      if (event.reason && 
+          (event.reason.message?.includes('adsbygoogle') || 
+           event.reason.message?.includes('googlesyndication'))) {
+        console.warn('⚠️ AdSense promise rejection caught (expected until approved):', event.reason.message);
+        event.preventDefault(); // Prevent React error screen
+      }
+    });
+
+    return () => {
+      window.removeEventListener('error', handleAdSenseError);
+    };
+  }, []);
+
   // Check URL parameters for shortcuts
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);

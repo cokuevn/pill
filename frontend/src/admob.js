@@ -73,16 +73,20 @@ class AdMobManager {
         await this.loadAdSenseScript(config.publisherId);
       }
       
-      // Initialize AdSense with real Publisher ID
-      (window.adsbygoogle = window.adsbygoogle || []).push({
-        google_ad_client: config.publisherId || this.productionIds.publisherId,
-        enable_page_level_ads: true
-      });
+      // Initialize AdSense with real Publisher ID - wrapped in try/catch
+      try {
+        (window.adsbygoogle = window.adsbygoogle || []).push({
+          google_ad_client: config.publisherId || this.productionIds.publisherId,
+          enable_page_level_ads: true
+        });
+      } catch (pushError) {
+        console.warn('⚠️ AdSense push failed, but continuing:', pushError.message);
+      }
       
       console.log('✅ AdSense initialized for web');
       return true;
     } catch (error) {
-      console.error('❌ AdSense initialization failed:', error);
+      console.warn('⚠️ AdSense initialization failed (expected until approved):', error.message);
       return false;
     }
   }

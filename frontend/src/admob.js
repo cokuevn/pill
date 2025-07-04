@@ -202,14 +202,14 @@ class AdMobManager {
         setTimeout(() => {
           const adIframe = container.querySelector('iframe');
           if (!adIframe || adIframe.style.display === 'none') {
-            console.warn('⚠️ AdSense banner may not have loaded');
+            console.warn('⚠️ AdSense banner may not have loaded (normal until approved)');
             return false;
           }
         }, 2000);
         
         return true;
       } catch (adError) {
-        console.error('❌ AdSense push failed:', adError);
+        console.warn('⚠️ AdSense push failed (expected until approved):', adError.message);
         return false;
       }
       

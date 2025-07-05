@@ -346,10 +346,22 @@ class PillReminderDB {
   
   // Расчет ожидаемых доз для лекарства за период
   calculateExpectedDoses(pill, days) {
-    const daysInWeek = 7;
-    const weeksInPeriod = Math.ceil(days / daysInWeek);
-    const dosesPerWeek = pill.days.length;
-    return weeksInPeriod * dosesPerWeek;
+    let expectedDoses = 0;
+    const today = new Date();
+    
+    // Считаем точно по дням за указанный период
+    for (let i = 0; i < days; i++) {
+      const checkDate = new Date(today);
+      checkDate.setDate(today.getDate() - i);
+      const dayOfWeek = checkDate.getDay();
+      
+      // Проверяем, должно ли лекарство приниматься в этот день
+      if (pill.days.includes(dayOfWeek)) {
+        expectedDoses++;
+      }
+    }
+    
+    return expectedDoses;
   }
   
   // Получение паттернов приема

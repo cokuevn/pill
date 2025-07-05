@@ -809,45 +809,54 @@ function App() {
         console.log('Notification permission:', permission);
       }
 
-      // Initialize AdMob/AdSense with real IDs
-      try {
-        const adConfig = {
-          publisherId: 'ca-pub-4181222038181630', // Your real Publisher ID
-          bannerId: 'ca-app-pub-4181222038181630/7332397743', // Your Banner Ad Unit
-          interstitialId: 'ca-app-pub-4181222038181630/5191667171', // Your Interstitial Ad Unit
-          adSlot: '7332397743' // Banner ad slot for AdSense
-        };
-        
-        const adInitialized = await adMob.init(adConfig);
-        if (adInitialized) {
-          console.log('✅ Real AdMob/AdSense initialized with your IDs');
+      // Initialize AdMob/AdSense with real IDs - с задержкой для избежания ошибок
+      setTimeout(async () => {
+        try {
+          const adConfig = {
+            publisherId: 'ca-pub-4181222038181630', // Your real Publisher ID
+            bannerId: 'ca-app-pub-4181222038181630/7332397743', // Your Banner Ad Unit
+            interstitialId: 'ca-app-pub-4181222038181630/5191667171', // Your Interstitial Ad Unit
+            adSlot: '7332397743' // Banner ad slot for AdSense
+          };
           
-          // Show banner ad after 3 seconds with fallback
-          setTimeout(async () => {
-            try {
-              const success = await adMob.showBanner({
-                containerId: 'main-ad-banner',
-                parent: 'main',
-                publisherId: 'ca-pub-4181222038181630',
-                adSlot: '7332397743',
-                format: 'auto'
-              });
-              
-              if (!success) {
-                // Show fallback if real ads fail
-                setTimeout(() => {
-                  const fallback = document.getElementById('ad-fallback');
-                  if (fallback) {
-                    fallback.style.display = 'block';
-                  }
-                }, 2000);
+          const adInitialized = await adMob.init(adConfig);
+          if (adInitialized) {
+            console.log('✅ Real AdMob/AdSense initialized with your IDs');
+            
+            // Show banner ad after 3 seconds with fallback
+            setTimeout(async () => {
+              try {
+                const success = await adMob.showBanner({
+                  containerId: 'main-ad-banner',
+                  parent: 'main',
+                  publisherId: 'ca-pub-4181222038181630',
+                  adSlot: '7332397743',
+                  format: 'auto'
+                });
+                
+                if (!success) {
+                  // Show fallback if real ads fail
+                  setTimeout(() => {
+                    const fallback = document.getElementById('ad-fallback');
+                    if (fallback) {
+                      fallback.style.display = 'block';
+                    }
+                  }, 2000);
+                }
+              } catch (error) {
+                console.warn('⚠️ Banner ad failed (expected until approved):', error.message);
+                // Show fallback on error
+                const fallback = document.getElementById('ad-fallback');
+                if (fallback) {
+                  fallback.style.display = 'block';
+                }
               }
-            } catch (error) {
-              console.error('❌ Banner ad failed:', error);
-              // Show fallback on error
-              const fallback = document.getElementById('ad-fallback');
-              if (fallback) {
-                fallback.style.display = 'block';
+            }, 3000);
+          }
+        } catch (error) {
+          console.warn('⚠️ AdMob initialization failed (expected until approved):', error.message);
+        }
+      }, 2000); // Задержка 2 секунды для полной загрузки приложения
               }
             }
           }, 3000);

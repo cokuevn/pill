@@ -120,31 +120,93 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
     setLoading(true);
 
     try {
+      // Получаем локальный контекст пользователя
+      const contextualData = await aiAssistant.createContextualResponse(userMessage, chatType, pills);
+      
+      // Подготавливаем расширенные данные для бэкенда
+      const requestBody = {
+        message: userMessage,
+        session_id: sessionId,
+        message_type: chatType,
+        user_medications: pills.map(pill => ({
+          id: pill.id,
+          name: pill.name,
+          time: pill.time,
+          days: pill.days
+        })),
+        // Добавляем персональный контекст
+        user_context: contextualData ? {
+          adherence_rate: contextualData.userContext.adherenceRate,
+          consecutive_days: contextualData.userContext.consecutiveDays,
+          total_medications: contextualData.userContext.totalMedications,
+          missed_doses: contextualData.userContext.missedDoses,
+          has_timing_issues: contextualData.userContext.hasTimingIssues,
+          needs_motivation: contextualData.userContext.needsMotivation,
+          recent_achievements: contextualData.userContext.recentAchievements,
+          current_concerns: contextualData.userContext.currentConcerns,
+          preferred_time_slot: contextualData.userContext.preferredTimeSlot
+        } : null,
+        // Добавляем рекомендации
+        recommendations: contextualData?.recommendations || [],
+        insights: contextualData?.insights || []
+      };
+
       const response = await fetch(`${API}/ai/chat`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          message: userMessage,
-          session_id: sessionId,
-          message_type: chatType,
-          user_medications: pills.map(pill => ({
-            id: pill.id,
-            name: pill.name,
-            time: pill.time,
-            days: pill.days
-          }))
-        })
+        body: JSON.stringify(requestBody)
       });
 
       if (!response.ok) throw new Error('Failed to get AI response');
 
       const data = await response.json();
-      setMessages(prev => [...prev, { type: 'ai', content: data.response }]);
+      
+      // Если есть локальные данные, добавляем персонализированную информацию
+      let aiResponse = data.response;
+      
+      if (contextualData && contextualData.hasPersonalData) {
+        // Добавляем персональные insights если их еще нет в ответе
+        if (contextualData.shouldCelebrate && !aiResponse.includes('🎉')) {
+          aiResponse += `\n\n🎉 Кстати, поздравляю! Ваша дисциплина в приеме лекарств впечатляет!`;
+        }
+        
+        if (contextualData.insights.length > 0) {
+          const insight = contextualData.insights[0];
+          if (insight.emotionalSupport) {
+            aiResponse += `\n\n💙 ${insight.message}`;
+          }
+        }
+      }
+      
+      setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
+      
+      // Сохраняем сообщение в локальную БД
+      await storage.database.saveAIMessage(sessionId, userMessage, aiResponse, chatType);
+      
     } catch (error) {
       console.error('AI Chat error:', error);
+      
+      // Fallback с локальными рекомендациями
+      let fallbackMessage = 'Sorry, I\'m having trouble connecting right now.';
+      
+      try {
+        const localContext = await aiAssistant.createContextualResponse(userMessage, chatType, pills);
+        if (localContext && localContext.hasPersonalData) {
+          const recommendations = localContext.recommendations.slice(0, 2);
+          if (recommendations.length > 0) {
+            fallbackMessage = "Хотя я не могу подключиться к серверу, вот что я могу сказать на основе ваших данных:\n\n";
+            recommendations.forEach(rec => {
+              fallbackMessage += `• ${rec.message}\n`;
+            });
+          }
+        }
+      } catch (localError) {
+        console.error('Local context error:', localError);
+      }
+      
       setMessages(prev => [...prev, { 
         type: 'ai', 
-        content: 'Sorry, I\'m having trouble connecting right now. Please try again later.' 
+        content: fallbackMessage
       }]);
     } finally {
       setLoading(false);

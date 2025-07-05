@@ -101,18 +101,18 @@ self.addEventListener('notificationclick', (event) => {
           });
           return client.focus();
         }
-        return clients.openWindow('/');
+        return self.clients.openWindow('/');
       })
     );
   } else {
     // Открыть приложение
     event.waitUntil(
-      clients.matchAll({ type: 'window' }).then((clientList) => {
+      self.clients.matchAll({ type: 'window' }).then((clientList) => {
         const client = clientList.find(c => c.url === self.registration.scope);
         if (client) {
           return client.focus();
         }
-        return clients.openWindow('/');
+        return self.clients.openWindow('/');
       })
     );
   }

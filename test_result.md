@@ -210,9 +210,7 @@ metadata:
 
 test_plan:
   current_focus:
-    - "PWA Icons Generation" 
-    - "Service Worker Preload Warning"
-    - "React Error Screen Prevention"
+    - "Core App Functionality"
   stuck_tasks:
     - "AdSense Integration"
   test_all: false

@@ -294,25 +294,6 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
     }
   }, [isOpen, pills.length]);
 
-  // Handle Service Worker messages for pill taking
-  useEffect(() => {
-    const handleServiceWorkerMessage = (event) => {
-      if (event.data && event.data.type === 'PILL_TAKEN') {
-        const { pillId } = event.data;
-        takePill(pillId);
-        console.log('💊 Pill marked as taken via notification:', pillId);
-      }
-    };
-
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.addEventListener('message', handleServiceWorkerMessage);
-      
-      return () => {
-        navigator.serviceWorker.removeEventListener('message', handleServiceWorkerMessage);
-      };
-    }
-  }, []);
-
   // Загрузка персональных insights
   const loadPersonalInsights = async () => {
     try {

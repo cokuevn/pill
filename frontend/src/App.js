@@ -809,7 +809,11 @@ function App() {
         console.log('Notification permission:', permission);
       }
 
-      // Initialize AdMob/AdSense with real IDs - с задержкой для избежания ошибок
+      // Initialize AdMob/AdSense with real IDs - ВРЕМЕННО ОТКЛЮЧЕНО до одобрения Google
+      // TODO: Включить после одобрения AdSense аккаунта
+      console.log('📢 AdSense временно отключен до одобрения Google аккаунта');
+      
+      /* ЗАКОММЕНТИРОВАНО до одобрения AdSense:
       setTimeout(async () => {
         try {
           const adConfig = {
@@ -857,6 +861,7 @@ function App() {
           console.warn('⚠️ AdMob initialization failed (expected until approved):', error.message);
         }
       }, 2000); // Задержка 2 секунды для полной загрузки приложения
+      */
     };
 
     initServices();

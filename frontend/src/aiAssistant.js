@@ -6,19 +6,19 @@ import database from './database.js';
 class AIAssistant {
   constructor() {
     this.supportMessages = [
-      "Помни, что забота о своем здоровье - это проявление любви к себе! 💙",
-      "Каждый день, когда ты принимаешь лекарства вовремя - это маленькая победа! 🏆",
-      "Ты справляешься отлично! Продолжай в том же духе! 💪",
-      "Здоровые привычки формируются день за днем. Ты на правильном пути! 🌟",
-      "Твоя дисциплина в приеме лекарств вдохновляет! Так держать! ✨"
+      "Remember, taking care of your health is an act of self-love! 💙",
+      "Every day you take your medications on time is a small victory! 🏆",
+      "You're doing great! Keep up the excellent work! 💪",
+      "Healthy habits are built day by day. You're on the right path! 🌟",
+      "Your discipline in taking medications is inspiring! Keep it up! ✨"
     ];
     
     this.motivationalMessages = [
-      "Сегодня новый день - новые возможности позаботиться о себе! 🌅",
-      "Ты уже сделал важный шаг, добавив лекарства в приложение. Теперь осталось их принимать! 📱",
-      "Маленькие шаги каждый день приводят к большим результатам! 👣",
-      "Твое здоровье - твое богатство. Инвестируй в него каждый день! 💎",
-      "Помни: ты не один в этом путешествии к здоровью! 🤝"
+      "Today is a new day - new opportunities to take care of yourself! 🌅",
+      "You've already taken an important step by adding medications to the app. Now just take them! 📱",
+      "Small steps every day lead to big results! 👣",
+      "Your health is your wealth. Invest in it every day! 💎",
+      "Remember: you're not alone on this journey to health! 🤝"
     ];
   }
 

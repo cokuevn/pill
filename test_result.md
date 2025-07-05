@@ -274,6 +274,18 @@ frontend:
         agent: "main"
         comment: "Added comprehensive push notification system with NotificationManager component in Settings. Created scheduling functions for medication reminders with snooze functionality. Fixed all AI text to English. Enhanced Service Worker with better notification handling including 10-minute snooze and final reminders. Added automatic notification scheduling when adding new medications."
 
+  - task: "PWA Version Update to v1.4.0"
+    implemented: true
+    working: true
+    file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Обновил PWA до версии 1.4.0 'Full Featured'. Изменил версии кеша Service Worker на v6-full-featured. Обновил описание для отражения полного функционала с пуш уведомлениями и персонализированным ИИ на английском языке."
+
   - task: "Missed Doses Calculation Fix"
     implemented: true
     working: true

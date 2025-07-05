@@ -1418,28 +1418,64 @@ function App() {
     return takenToday[`${today}_${pillId}`] || false;
   };
 
-  // Schedule notifications
-  const scheduleNotifications = (pill) => {
+  // Schedule notifications for a specific pill
+  const scheduleNotifications = async (pill) => {
     if ('serviceWorker' in navigator && 'Notification' in window && Notification.permission === 'granted') {
-      navigator.serviceWorker.ready.then(registration => {
-        const now = new Date();
-        const [hours, minutes] = pill.time.split(':');
+      try {
+        const registration = await navigator.serviceWorker.ready;
         
         // Schedule notifications for the next 7 days
+        const now = new Date();
         for (let i = 0; i < 7; i++) {
           const notificationDate = new Date(now);
           notificationDate.setDate(now.getDate() + i);
-          notificationDate.setHours(parseInt(hours), parseInt(minutes), 0, 0);
+          const dayOfWeek = notificationDate.getDay();
           
-          if (pill.days.includes(notificationDate.getDay()) && notificationDate > now) {
-            navigator.serviceWorker.controller?.postMessage({
-              type: 'SCHEDULE_NOTIFICATION',
-              pill,
-              time: notificationDate.toISOString()
-            });
+          // Check if this pill should be taken on this day
+          if (pill.days.includes(dayOfWeek)) {
+            const [hours, minutes] = pill.time.split(':').map(Number);
+            const notificationTime = new Date(notificationDate);
+            notificationTime.setHours(hours, minutes, 0, 0);
+            
+            // Only schedule if time hasn't passed
+            if (notificationTime > now) {
+              const timeUntilNotification = notificationTime.getTime() - now.getTime();
+              
+              setTimeout(async () => {
+                try {
+                  await registration.showNotification(`Time for ${pill.name}! 💊`, {
+                    body: `Don't forget to take your ${pill.name}`,
+                    icon: '/icon-192.png',
+                    badge: '/icon-192.png',
+                    tag: `pill-${pill.id}-${notificationTime.getTime()}`,
+                    requireInteraction: true,
+                    actions: [
+                      {
+                        action: 'take_pill',
+                        title: 'Mark as Taken ✅'
+                      },
+                      {
+                        action: 'snooze',
+                        title: 'Remind me in 10 min ⏰'
+                      }
+                    ],
+                    data: {
+                      pillId: pill.id,
+                      pillName: pill.name,
+                      scheduledTime: notificationTime.toISOString()
+                    }
+                  });
+                  console.log(`📅 Notification scheduled for ${pill.name} at ${notificationTime.toLocaleString()}`);
+                } catch (error) {
+                  console.error('Error showing notification:', error);
+                }
+              }, timeUntilNotification);
+            }
           }
         }
-      });
+      } catch (error) {
+        console.error('Error scheduling notifications:', error);
+      }
     }
   };
 

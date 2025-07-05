@@ -1,7 +1,7 @@
-// Enhanced Service Worker для PWA - Personalized AI Version
-const CACHE_NAME = 'pill-reminder-v5-ai-personalized';
-const STATIC_CACHE = 'pill-reminder-static-v5';
-const DYNAMIC_CACHE = 'pill-reminder-dynamic-v5';
+// Enhanced Service Worker для PWA - Full Featured Version with Push Notifications
+const CACHE_NAME = 'pill-reminder-v6-full-featured';
+const STATIC_CACHE = 'pill-reminder-static-v6';
+const DYNAMIC_CACHE = 'pill-reminder-dynamic-v6';
 
 // Файлы для кэширования
 const STATIC_FILES = [

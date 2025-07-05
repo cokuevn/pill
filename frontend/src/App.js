@@ -54,6 +54,34 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
   const [sessionId, setSessionId] = useState('');
   const [chatType, setChatType] = useState('support'); // 'support', 'recommendation', 'general'
 
+  // Функция для сброса чата
+  const resetChat = async () => {
+    setMessages([]);
+    setCurrentMessage('');
+    setLoading(false);
+    
+    // Создаем новую сессию при сбросе
+    try {
+      const newSession = `session_${Date.now()}`;
+      await storage.setAISessionId(newSession);
+      setSessionId(newSession);
+      console.log('🔄 Chat reset with new session:', newSession);
+    } catch (error) {
+      console.error('❌ Error resetting session:', error);
+      // Fallback to local session
+      const fallbackSession = `session_${Date.now()}`;
+      setSessionId(fallbackSession);
+    }
+  };
+
+  // Функция для возврата к начальной странице
+  const backToStart = () => {
+    setMessages([]);
+    setCurrentMessage('');
+    setLoading(false);
+    // Сессия остается та же, только очищаем интерфейс
+  };
+
   useEffect(() => {
     if (isOpen) {
       // Get or create session ID using IndexedDB

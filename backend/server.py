@@ -154,8 +154,8 @@ def get_system_message(message_type: str, medications: Optional[List[Dict]] = No
     return base_prompt
 
 # Initialize LLM Chat
-def create_chat_instance(session_id: str, message_type: str, medications: Optional[List[Dict]] = None) -> LlmChat:
-    system_message = get_system_message(message_type, medications)
+def create_chat_instance(session_id: str, message_type: str, medications: Optional[List[Dict]] = None, user_context: Optional[Dict] = None) -> LlmChat:
+    system_message = get_system_message(message_type, medications, user_context)
     
     chat = LlmChat(
         api_key=OPENAI_API_KEY,

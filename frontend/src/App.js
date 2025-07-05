@@ -1582,6 +1582,7 @@ function App() {
         onClose={() => setShowSettingsModal(false)}
         onClearData={clearAllData}
         pillCount={pills.length}
+        pills={pills}
       />
 
       <AIChatModal

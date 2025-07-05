@@ -239,13 +239,15 @@ test_plan:
     - "AdSense Integration"
   test_all: false
   test_priority: "high_first"
-    implemented: true
-    working: true
-    file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"
-    stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
-    status_history:
-      - working: true
-        agent: "main"
-        comment: "Обновил PWA до версии 1.2.0 'Stable'. Изменил версии кеша Service Worker на v4-stable, исправил clients references, обновил описание и названия. Применены все исправления для стабильной работы без AdSense ошибок."
+
+agent_communication:
+  - agent: "main"
+    message: "Исправил проблемы с иконками PWA и Service Worker. AdSense ошибки нормальны до одобрения аккаунта Google. Готов для тестирования фронтенда."
+  - agent: "main"
+    message: "Исправил черный экран ошибок React при перезагрузке. Добавил глобальный обработчик AdSense ошибок и улучшил error handling. Теперь AdSense ошибки не будут показывать экран ошибок React."
+  - agent: "main"
+    message: "Пользователь готов протестировать исправления. Обновил test_plan для фокуса на исправленных задачах. Готов к тестированию фронтенда."
+  - agent: "testing"
+    message: "Провел тестирование исправлений PWA. Результаты: 1) PWA иконки (icon-192.png и icon-512.png) доступны и загружаются корректно. 2) Service Worker регистрируется без ошибок. 3) Черный экран ошибок React больше не появляется при многократных перезагрузках страницы. 4) AdSense ошибки отображаются в консоли, но не вызывают критических проблем в приложении. Все исправления работают корректно."
+  - agent: "main"
+    message: "Обновил PWA до версии 1.2.0 'Stable'. Полностью отключил AdSense до одобрения Google. Обновил Service Worker кеш, исправил ошибки clients references, создал инструкцию для включения AdSense после одобрения."

@@ -124,7 +124,7 @@ frontend:
     file: "frontend/public/icon-192.png, frontend/public/icon-512.png"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -132,6 +132,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "Создал новые PNG иконки с помощью Python PIL"
+      - working: true
+        agent: "testing"
+        comment: "Проверил доступность иконок. Иконки icon-192.png и icon-512.png доступны и загружаются корректно (HTTP 200). Визуально иконки отображаются правильно."
         
   - task: "Service Worker Preload Warning"
     implemented: true
@@ -139,7 +142,7 @@ frontend:
     file: "frontend/public/index.html"
     stuck_count: 0
     priority: "medium"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -147,6 +150,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "Убрал ненужный preload тег из index.html"
+      - working: true
+        agent: "testing"
+        comment: "Service Worker регистрируется успешно. В консоли нет предупреждений о preload. Проверка показала, что Service Worker зарегистрирован и активен."
         
   - task: "AdSense Integration"
     implemented: true
@@ -162,6 +168,9 @@ frontend:
       - working: false
         agent: "main"
         comment: "Это ожидаемое поведение - Google AdSense аккаунт еще не одобрен"
+      - working: false
+        agent: "testing"
+        comment: "AdSense ошибки по-прежнему присутствуют в консоли, но это ожидаемое поведение до одобрения аккаунта. Важно, что эти ошибки не вызывают критических проблем в приложении."
         
   - task: "React Error Screen Prevention"
     implemented: true
@@ -169,7 +178,7 @@ frontend:
     file: "frontend/src/App.js, frontend/src/admob.js"
     stuck_count: 0
     priority: "high"
-    needs_retesting: true
+    needs_retesting: false
     status_history:
       - working: false
         agent: "user"
@@ -177,6 +186,9 @@ frontend:
       - working: true
         agent: "main"
         comment: "Добавил глобальный обработчик AdSense ошибок, улучшил error handling в admob.js"
+      - working: true
+        agent: "testing"
+        comment: "Выполнил 5 последовательных перезагрузок страницы. Черный экран с ошибками React больше не появляется. Глобальный обработчик ошибок успешно перехватывает ошибки AdSense и предотвращает появление экрана ошибок React. Ошибки AdSense отображаются в консоли, но не влияют на работу приложения."
         
   - task: "Core App Functionality"
     implemented: true

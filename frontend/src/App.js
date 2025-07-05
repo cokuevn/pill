@@ -134,7 +134,7 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
         
         // Приветствие с персональными данными
         if (contextualData.userContext.consecutiveDays > 0) {
-          insightMessage += `🎯 Привет! У вас ${contextualData.userContext.consecutiveDays} дней подряд регулярного приема лекарств!\n\n`;
+          insightMessage += `🎯 Hello! You have ${contextualData.userContext.consecutiveDays} consecutive days of regular medication intake!\n\n`;
         }
         
         // Добавляем ключевые insights
@@ -146,12 +146,12 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
         }
         
         // Добавляем статистику
-        insightMessage += `📊 Ваша статистика:\n`;
-        insightMessage += `• Уровень соблюдения: ${contextualData.userContext.adherenceRate}%\n`;
-        insightMessage += `• Активных лекарств: ${contextualData.userContext.totalMedications}\n`;
+        insightMessage += `📊 Your statistics:\n`;
+        insightMessage += `• Adherence level: ${contextualData.userContext.adherenceRate}%\n`;
+        insightMessage += `• Active medications: ${contextualData.userContext.totalMedications}\n`;
         
         if (contextualData.userContext.missedDoses > 0) {
-          insightMessage += `• Пропущено доз: ${contextualData.userContext.missedDoses}\n`;
+          insightMessage += `• Missed doses: ${contextualData.userContext.missedDoses}\n`;
         }
         
         // Добавляем мотивацию или поддержку

@@ -315,27 +315,41 @@ class PillReminderDB {
       // Статистика по каждому лекарству
       pills.forEach(pill => {
         const pillHistory = recentHistory.filter(record => record.pillId === pill.id);
-        const expectedDoses = this.calculateExpectedDoses(pill, days);
-        const adherenceRate = expectedDoses > 0 ? (pillHistory.length / expectedDoses) * 100 : 0;
+        
+        // Определяем дату добавления лекарства (используем ID как timestamp или текущую дату)
+        const pillCreatedDate = new Date(pill.id || Date.now());
+        const daysSincePillAdded = Math.min(days, Math.floor((Date.now() - pillCreatedDate.getTime()) / (1000 * 60 * 60 * 24)));
+        
+        // Считаем ожидаемые дозы только с момента добавления лекарства
+        const actualDaysToCheck = Math.max(1, daysSincePillAdded);
+        const expectedDoses = this.calculateExpectedDoses(pill, actualDaysToCheck);
+        const adherenceRate = expectedDoses > 0 ? (pillHistory.length / expectedDoses) * 100 : 100;
+        
+        // Для очень новых лекарств (добавлены сегодня) не считаем пропущенные дозы
+        const missedDays = daysSincePillAdded > 1 ? Math.max(0, expectedDoses - pillHistory.length) : 0;
         
         stats.pillStats.push({
           pill: pill,
           taken: pillHistory.length,
           expected: expectedDoses,
-          adherenceRate: Math.round(adherenceRate),
+          adherenceRate: Math.round(Math.min(100, adherenceRate)),
           lastTaken: pillHistory.length > 0 ? pillHistory[pillHistory.length - 1].takenAt : null,
-          missedDays: expectedDoses - pillHistory.length
+          missedDays: missedDays,
+          daysSincePillAdded: daysSincePillAdded
         });
         
-        if (adherenceRate < 80) {
+        // Только для лекарств, которые добавлены не сегодня
+        if (adherenceRate < 80 && daysSincePillAdded > 1) {
           stats.concerns.push(`Low adherence for ${pill.name}: ${Math.round(adherenceRate)}%`);
         }
       });
       
       // Общий процент соблюдения
       const totalExpected = stats.pillStats.reduce((sum, stat) => sum + stat.expected, 0);
-      stats.adherenceRate = totalExpected > 0 ? Math.round((recentHistory.length / totalExpected) * 100) : 0;
-      stats.missedDoses = totalExpected - recentHistory.length;
+      const totalMissed = stats.pillStats.reduce((sum, stat) => sum + stat.missedDays, 0);
+      
+      stats.adherenceRate = totalExpected > 0 ? Math.round((recentHistory.length / totalExpected) * 100) : 100;
+      stats.missedDoses = totalMissed;
       
       return stats;
     } catch (error) {

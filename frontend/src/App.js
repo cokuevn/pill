@@ -318,17 +318,19 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
           "Can I change notification times?",
           "What if I miss a dose?",
           "How to install this app on my phone?",
+          "Show my medication statistics",
           "How to backup my medication data?"
         ];
       case 'recommendation':
         return [
+          "Analyze my medication schedule",
           "What's the best time to take medications?",
           "How to build a consistent medication routine?",
           "Tips for remembering multiple medications",
           "How to organize my medication schedule?",
+          "Show my adherence patterns",
           "What to do if I forget a dose?",
-          "How to track medication effectiveness?",
-          "Best practices for pill organization"
+          "How to improve my consistency?"
         ];
       case 'general':
         return [
@@ -337,7 +339,8 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
           "When should I talk to my doctor?",
           "How to store medications properly?",
           "What are generic vs brand medications?",
-          "How to read medication labels?",
+          "Give me motivation to stay consistent",
+          "Help me understand my health journey",
           "What questions to ask my pharmacist?"
         ];
       default:

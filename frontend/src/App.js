@@ -99,6 +99,11 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
           }
           setSessionId(session);
           console.log('🤖 AI session initialized:', session);
+          
+          // Загружаем персональные insights при открытии
+          if (pills.length > 0) {
+            loadPersonalInsights();
+          }
         } catch (error) {
           console.error('❌ Error initializing AI session:', error);
           // Fallback to local session
@@ -109,7 +114,55 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
       
       initSession();
     }
-  }, [isOpen]);
+  }, [isOpen, pills.length]);
+
+  // Загрузка персональных insights
+  const loadPersonalInsights = async () => {
+    try {
+      const contextualData = await aiAssistant.createContextualResponse('', 'support', pills);
+      
+      if (contextualData && contextualData.hasPersonalData) {
+        let insightMessage = '';
+        
+        // Приветствие с персональными данными
+        if (contextualData.userContext.consecutiveDays > 0) {
+          insightMessage += `🎯 Привет! У вас ${contextualData.userContext.consecutiveDays} дней подряд регулярного приема лекарств!\n\n`;
+        }
+        
+        // Добавляем ключевые insights
+        if (contextualData.recommendations.length > 0) {
+          const topRec = contextualData.recommendations[0];
+          if (topRec.type === 'celebration') {
+            insightMessage += `${topRec.message}\n\n`;
+          }
+        }
+        
+        // Добавляем статистику
+        insightMessage += `📊 Ваша статистика:\n`;
+        insightMessage += `• Уровень соблюдения: ${contextualData.userContext.adherenceRate}%\n`;
+        insightMessage += `• Активных лекарств: ${contextualData.userContext.totalMedications}\n`;
+        
+        if (contextualData.userContext.missedDoses > 0) {
+          insightMessage += `• Пропущено доз: ${contextualData.userContext.missedDoses}\n`;
+        }
+        
+        // Добавляем мотивацию или поддержку
+        if (contextualData.insights.length > 0) {
+          const insight = contextualData.insights[0];
+          if (insight.emotionalSupport) {
+            insightMessage += `\n💙 ${insight.message}`;
+          }
+        }
+        
+        // Если есть что показать, добавляем как первое сообщение
+        if (insightMessage.trim()) {
+          setMessages([{ type: 'ai', content: insightMessage.trim() }]);
+        }
+      }
+    } catch (error) {
+      console.error('Error loading personal insights:', error);
+    }
+  };
 
   const sendMessage = async () => {
     if (!currentMessage.trim() || loading) return;

@@ -121,9 +121,9 @@ class AIAssistant {
       recommendations.push({
         type: 'improvement',
         priority: 'high',
-        title: 'Улучшение приема лекарств',
-        message: `Ваш текущий уровень соблюдения: ${userContext.adherenceRate}%. Рекомендую установить дополнительные напоминания или попробовать принимать лекарства в более удобное время.`,
-        action: 'Настроить напоминания'
+        title: 'Medication Adherence Improvement',
+        message: `Your current adherence level: ${userContext.adherenceRate}%. I recommend setting additional reminders or trying to take medications at a more convenient time.`,
+        action: 'Set up reminders'
       });
     }
     
@@ -132,9 +132,9 @@ class AIAssistant {
       recommendations.push({
         type: 'timing',
         priority: 'medium',
-        title: 'Оптимизация расписания',
-        message: `Замечаю частые задержки в приеме. Возможно, стоит пересмотреть время приема лекарств? Ваш самый активный период: ${userContext.preferredTimeSlot}`,
-        action: 'Изменить расписание'
+        title: 'Schedule Optimization',
+        message: `I notice frequent delays in taking medications. Perhaps you should reconsider the timing? Your most active period: ${userContext.preferredTimeSlot}`,
+        action: 'Adjust schedule'
       });
     }
     
@@ -143,11 +143,11 @@ class AIAssistant {
       recommendations.push({
         type: 'celebration',
         priority: 'positive',
-        title: 'Поздравляем! 🎉',
+        title: 'Congratulations! 🎉',
         message: userContext.consecutiveDays > 7 
-          ? `Невероятно! Вы принимаете лекарства ${userContext.consecutiveDays} дней подряд!`
-          : `Отличная дисциплина! Уровень соблюдения: ${userContext.adherenceRate}%`,
-        action: 'Продолжать в том же духе'
+          ? `Amazing! You've been taking medications ${userContext.consecutiveDays} days in a row!`
+          : `Excellent discipline! Adherence rate: ${userContext.adherenceRate}%`,
+        action: 'Keep up the great work'
       });
     }
     
@@ -156,9 +156,9 @@ class AIAssistant {
       recommendations.push({
         type: 'motivation',
         priority: 'high',
-        title: 'Мотивация',
+        title: 'Motivation',
         message: this.getRandomMessage(this.motivationalMessages),
-        action: 'Начать новый день'
+        action: 'Start a new day'
       });
     }
     
@@ -167,9 +167,9 @@ class AIAssistant {
       recommendations.push({
         type: 'guidance',
         priority: 'high',
-        title: 'Добро пожаловать!',
-        message: 'Давайте начнем! Добавьте ваши лекарства, и я помогу вам создать идеальное расписание приема.',
-        action: 'Добавить лекарство'
+        title: 'Welcome!',
+        message: 'Let\'s get started! Add your medications, and I\'ll help you create the perfect medication schedule.',
+        action: 'Add medication'
       });
     }
     

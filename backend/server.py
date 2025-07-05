@@ -77,22 +77,48 @@ class Medication(BaseModel):
     created_at: str
 
 # AI Assistant Configuration
-def get_system_message(message_type: str, medications: Optional[List[Dict]] = None) -> str:
+def get_system_message(message_type: str, medications: Optional[List[Dict]] = None, user_context: Optional[Dict] = None) -> str:
     base_prompt = """You are a helpful AI assistant for a medication reminder app called "Simple Pill Reminder". 
     You provide friendly, informative support while being mindful that you're not a doctor and should not provide medical advice.
     
     Always be helpful, concise, and encourage users to consult healthcare professionals for medical decisions.
+    
+    IMPORTANT: You have access to user's personal medication data and can provide personalized insights.
     """
     
+    # Добавляем персональный контекст если доступен
+    personal_context = ""
+    if user_context:
+        adherence_rate = user_context.get('adherence_rate', 0)
+        consecutive_days = user_context.get('consecutive_days', 0)
+        total_medications = user_context.get('total_medications', 0)
+        missed_doses = user_context.get('missed_doses', 0)
+        
+        personal_context = f"""
+        
+        USER'S PERSONAL CONTEXT:
+        - Adherence rate: {adherence_rate}%
+        - Consecutive days: {consecutive_days}
+        - Total medications: {total_medications}
+        - Recent missed doses: {missed_doses}
+        - Needs motivation: {user_context.get('needs_motivation', False)}
+        - Recent achievements: {user_context.get('recent_achievements', [])}
+        - Current concerns: {user_context.get('current_concerns', [])}
+        
+        Use this information to provide personalized responses. Be encouraging and supportive.
+        """
+    
     if message_type == "support":
-        return base_prompt + """
+        return base_prompt + personal_context + """
         Your role is to help users with:
         - How to use the app features
         - Troubleshooting app issues
         - General questions about medication reminders
         - Technical support
+        - Personal medication management based on their data
         
-        Keep responses friendly and helpful. If asked about medical advice, remind users to consult their healthcare provider.
+        Keep responses friendly and helpful. If you see concerning patterns in their data, gently suggest consulting their healthcare provider.
+        Be encouraging about their progress and provide practical tips.
         """
     
     elif message_type == "recommendation":
@@ -100,24 +126,32 @@ def get_system_message(message_type: str, medications: Optional[List[Dict]] = No
         if medications:
             med_context = f"\n\nUser's current medications: {medications}"
             
-        return base_prompt + f"""
-        Your role is to provide general wellness and medication management tips based on the user's medication schedule.
-        {med_context}
+        return base_prompt + personal_context + med_context + f"""
+        Your role is to provide personalized wellness and medication management tips based on the user's medication schedule and adherence data.
         
-        You can suggest:
-        - General tips for medication adherence
-        - Reminders about consistency
-        - Lifestyle suggestions that complement medication routines
-        - App features that might help
+        Focus on:
+        - Personalized schedule optimization
+        - Adherence improvement strategies based on their actual performance
+        - Celebrating their successes and gently addressing concerns
+        - Practical tips that fit their lifestyle patterns
         
-        NEVER provide specific medical advice, dosage recommendations, or suggest changes to medications.
-        Always remind users to consult healthcare professionals for medical decisions.
+        Be specific and actionable. Use their personal data to make relevant suggestions.
         """
     
-    else:  # general
-        return base_prompt + """
-        You're a general assistant for the pill reminder app. Help with any questions while staying within appropriate boundaries.
+    elif message_type == "general":
+        return base_prompt + personal_context + """
+        Your role is to provide general health and medication information while considering their personal medication journey.
+        
+        Focus on:
+        - General health education appropriate to their situation
+        - Motivation and psychological support based on their progress
+        - When to consult healthcare providers
+        - Wellness tips that complement their medication routine
+        
+        Be encouraging and acknowledge their efforts in managing their health.
         """
+    
+    return base_prompt
 
 # Initialize LLM Chat
 def create_chat_instance(session_id: str, message_type: str, medications: Optional[List[Dict]] = None) -> LlmChat:

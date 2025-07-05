@@ -293,6 +293,21 @@ class PillReminderDB {
       const pills = await this.getPills();
       const allTaken = await this.getAll('taken_history');
       
+      // Если нет лекарств, возвращаем пустую статистику
+      if (pills.length === 0) {
+        return {
+          totalPills: 0,
+          totalTaken: 0,
+          pillStats: [],
+          adherenceRate: 100,
+          missedDoses: 0,
+          streaks: {},
+          timePatterns: {},
+          mostActiveDay: null,
+          concerns: []
+        };
+      }
+      
       const cutoffDate = new Date();
       cutoffDate.setDate(cutoffDate.getDate() - days);
       

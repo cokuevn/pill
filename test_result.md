@@ -214,6 +214,18 @@ frontend:
         agent: "user"
         comment: "Основная функциональность работает: добавление лекарств, напоминания, IndexedDB"
 
+  - task: "PWA Version Update"
+    implemented: true
+    working: true
+    file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Обновил PWA до версии 1.2.0 'Stable'. Изменил версии кеша Service Worker на v4-stable, исправил clients references, обновил описание и названия. Применены все исправления для стабильной работы без AdSense ошибок."
+
 metadata:
   created_by: "main_agent"
   version: "1.0"

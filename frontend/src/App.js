@@ -857,13 +857,6 @@ function App() {
           console.warn('⚠️ AdMob initialization failed (expected until approved):', error.message);
         }
       }, 2000); // Задержка 2 секунды для полной загрузки приложения
-              }
-            }
-          }, 3000);
-        }
-      } catch (error) {
-        console.error('❌ Ad initialization failed:', error);
-      }
     };
 
     initServices();

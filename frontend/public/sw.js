@@ -83,14 +83,13 @@ self.addEventListener('fetch', (event) => {
   );
 });
 
-// Обработка клика по уведомлению
+// Handle notification clicks with enhanced functionality
 self.addEventListener('notificationclick', (event) => {
-  console.log('[SW] Notification click received');
-  
+  console.log('[SW] Notification clicked:', event.action);
   event.notification.close();
   
   if (event.action === 'take_pill') {
-    // Отметить таблетку как принятую
+    // Mark pill as taken
     event.waitUntil(
       self.clients.matchAll({ type: 'window' }).then((clientList) => {
         if (clientList.length > 0) {
@@ -104,8 +103,44 @@ self.addEventListener('notificationclick', (event) => {
         return self.clients.openWindow('/');
       })
     );
+  } else if (event.action === 'snooze') {
+    // Snooze for 10 minutes
+    event.waitUntil(
+      self.registration.showNotification(`⏰ Reminder: ${event.notification.data.pillName}`, {
+        body: `Don't forget to take your ${event.notification.data.pillName} (snoozed)`,
+        icon: '/icon-192.png',
+        badge: '/icon-192.png',
+        tag: `pill-snooze-${event.notification.data.pillId}`,
+        requireInteraction: true,
+        actions: [
+          {
+            action: 'take_pill',
+            title: 'Mark as Taken ✅'
+          }
+        ],
+        data: event.notification.data
+      }).then(() => {
+        // Schedule reminder in 10 minutes
+        setTimeout(() => {
+          self.registration.showNotification(`⏰ Final Reminder: ${event.notification.data.pillName}`, {
+            body: `Please take your ${event.notification.data.pillName} now`,
+            icon: '/icon-192.png',
+            badge: '/icon-192.png',
+            tag: `pill-final-${event.notification.data.pillId}`,
+            requireInteraction: true,
+            actions: [
+              {
+                action: 'take_pill',
+                title: 'Mark as Taken ✅'
+              }
+            ],
+            data: event.notification.data
+          });
+        }, 10 * 60 * 1000); // 10 minutes
+      })
+    );
   } else {
-    // Открыть приложение
+    // Open app
     event.waitUntil(
       self.clients.matchAll({ type: 'window' }).then((clientList) => {
         const client = clientList.find(c => c.url === self.registration.scope);

@@ -10,6 +10,10 @@ from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
 
+# Setup logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
 # Import emergent integrations for LLM
 from emergentintegrations.llm.chat import LlmChat, UserMessage
 

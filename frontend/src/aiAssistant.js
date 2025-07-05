@@ -180,15 +180,29 @@ class AIAssistant {
   async generateProactiveInsights(userContext) {
     const insights = [];
     
-    // Анализ пропусков
+    // Анализ пропусков - более умная логика
     if (userContext.missedDoses > 3) {
-      insights.push({
-        type: 'concern',
-        urgency: 'medium',
-        message: `I notice you've missed ${userContext.missedDoses} doses recently. Would you like to talk about what's making it difficult to take medications?`,
-        suggestion: 'Let\'s find a solution together',
-        emotionalSupport: true
-      });
+      // Проверяем, не новые ли это лекарства
+      const hasNewMedications = userContext.pillStats.some(stat => stat.daysSincePillAdded <= 1);
+      
+      if (!hasNewMedications) {
+        insights.push({
+          type: 'concern',
+          urgency: 'medium',
+          message: `I notice you've missed ${userContext.missedDoses} doses recently. Would you like to talk about what's making it difficult to take medications?`,
+          suggestion: 'Let\'s find a solution together',
+          emotionalSupport: true
+        });
+      } else {
+        // Для новых лекарств - более мягкое сообщение
+        insights.push({
+          type: 'guidance',
+          urgency: 'low',
+          message: 'I see you\'re just getting started with your medication routine. That\'s great! Building a habit takes time.',
+          suggestion: 'Set reminders and be patient with yourself as you build this healthy habit',
+          emotionalSupport: true
+        });
+      }
     }
     
     // Поддержка при низкой дисциплине

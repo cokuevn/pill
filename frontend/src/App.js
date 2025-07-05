@@ -299,7 +299,7 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
     const handleServiceWorkerMessage = (event) => {
       if (event.data && event.data.type === 'PILL_TAKEN') {
         const { pillId } = event.data;
-        handleTakePill(pillId);
+        takePill(pillId);
         console.log('💊 Pill marked as taken via notification:', pillId);
       }
     };

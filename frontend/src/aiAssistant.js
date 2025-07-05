@@ -239,22 +239,22 @@ class AIAssistant {
     
     // Эмпатия
     if (userContext.needsEncouragement) {
-      support.empathy = "Я понимаю, что иногда бывает трудно поддерживать регулярность приема лекарств. Вы не одиноки в этом, и ваши усилия имеют значение.";
+      support.empathy = "I understand that sometimes it can be difficult to maintain regular medication intake. You're not alone in this, and your efforts matter.";
     }
     
     // Поощрение
     if (userContext.adherenceRate > 0) {
-      support.encouragement = `Вы уже показываете заботу о своем здоровье - это замечательно! Каждый принятый вовремя препарат - это шаг к лучшему самочувствию.`;
+      support.encouragement = `You're already showing care for your health - that's wonderful! Every medication taken on time is a step towards better well-being.`;
     }
     
     // Практические советы
     if (userContext.hasTimingIssues) {
-      support.practical = "Попробуйте связать прием лекарств с повседневными действиями: утренний кофе, чистка зубов или просмотр новостей. Это поможет создать устойчивую привычку.";
+      support.practical = "Try linking medication intake with daily activities: morning coffee, brushing teeth, or checking the news. This helps create a sustainable habit.";
     }
     
     // Мотивация
     if (userContext.consecutiveDays > 0) {
-      support.motivation = `Ваш результат ${userContext.consecutiveDays} дней подряд показывает, что у вас есть сила воли! Это вдохновляет!`;
+      support.motivation = `Your result of ${userContext.consecutiveDays} consecutive days shows you have willpower! That's inspiring!`;
     } else {
       support.motivation = this.getRandomMessage(this.motivationalMessages);
     }

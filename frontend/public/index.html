@@ -29,6 +29,35 @@
         
         <!-- PWA Install Prompt -->
         <script>
+            // Global AdSense error handler - загружается ДО React
+            window.addEventListener('error', function(event) {
+                // Проверяем, связана ли ошибка с AdSense
+                if (event.error && 
+                    (event.error.message?.includes('adsbygoogle') || 
+                     event.error.message?.includes('googlesyndication') ||
+                     event.error.message?.includes('enable_page_level_ads') ||
+                     event.error.stack?.includes('adsbygoogle'))) {
+                    console.warn('⚠️ AdSense error caught early (expected until approved):', event.error.message);
+                    event.preventDefault(); // Предотвращаем React error screen
+                    event.stopPropagation();
+                    return true;
+                }
+                return false;
+            });
+            
+            // Обработчик для unhandled promise rejections
+            window.addEventListener('unhandledrejection', function(event) {
+                if (event.reason && 
+                    (event.reason.message?.includes('adsbygoogle') || 
+                     event.reason.message?.includes('googlesyndication') ||
+                     event.reason.message?.includes('enable_page_level_ads'))) {
+                    console.warn('⚠️ AdSense promise rejection caught early (expected until approved):', event.reason.message);
+                    event.preventDefault(); // Предотвращаем React error screen
+                    return true;
+                }
+                return false;
+            });
+            
             let deferredPrompt;
             let installPromptShown = false;
             

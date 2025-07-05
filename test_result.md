@@ -175,7 +175,7 @@ frontend:
   - task: "React Error Screen Prevention"
     implemented: true
     working: true
-    file: "frontend/src/App.js, frontend/src/admob.js, frontend/public/index.html"
+    file: "frontend/src/App.js, frontend/src/admob.js, frontend/public/index.html, frontend/.env"
     stuck_count: 1
     priority: "high"
     needs_retesting: true
@@ -195,6 +195,12 @@ frontend:
       - working: true
         agent: "main"
         comment: "Добавил обработчик ошибок прямо в HTML (до загрузки React), добавил обработку TagError, отложил инициализацию AdSense на 2 секунды"
+      - working: false
+        agent: "user"
+        comment: "Теперь ошибка держится 2 секунды из-за задержки"
+      - working: true
+        agent: "main"
+        comment: "ПОЛНОСТЬЮ ОТКЛЮЧИЛ AdSense через переменную окружения (REACT_APP_ADSENSE_ENABLED=false). Создал инструкцию для включения после одобрения Google. Теперь никаких AdSense ошибок вообще."
         
   - task: "Core App Functionality"
     implemented: true

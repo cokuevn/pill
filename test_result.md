@@ -238,6 +238,18 @@ frontend:
         agent: "main"
         comment: "Добавил функции сброса чата и возврата к начальной странице. Кнопки 'Back to Start' и 'Reset Chat' появляются в хедере и внизу когда есть сообщения. Reset создает новую сессию и требует подтверждения."
 
+  - task: "AI Personalized Assistant with Local DB Access"
+    implemented: true
+    working: true
+    file: "frontend/src/aiAssistant.js, frontend/src/database.js, frontend/src/App.js, backend/server.py"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Создал полную систему персонализированного ИИ помощника. Добавлены методы аналитики в database.js для получения статистики приема, паттернов поведения, insights. Создан aiAssistant.js для генерации рекомендаций, психологической поддержки и мотивации. Обновлен backend для обработки персонализированных данных. ИИ теперь имеет доступ к локальной БД и может давать персонализированные советы."
+
   - task: "PWA Version Update to v1.3.0"
     implemented: true
     working: true

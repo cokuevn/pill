@@ -47,6 +47,176 @@ const PWAStatus = () => {
   return null;
 };
 
+// Push Notification Manager Component
+const NotificationManager = ({ pills, onRequestPermission }) => {
+  const [notificationStatus, setNotificationStatus] = useState('default');
+  const [scheduledNotifications, setScheduledNotifications] = useState([]);
+
+  useEffect(() => {
+    if ('Notification' in window) {
+      setNotificationStatus(Notification.permission);
+    }
+  }, []);
+
+  const requestNotificationPermission = async () => {
+    if ('Notification' in window) {
+      const permission = await Notification.requestPermission();
+      setNotificationStatus(permission);
+      if (onRequestPermission) {
+        onRequestPermission(permission);
+      }
+      return permission;
+    }
+    return 'denied';
+  };
+
+  const scheduleNotifications = async () => {
+    if ('serviceWorker' in navigator && notificationStatus === 'granted') {
+      const registration = await navigator.serviceWorker.ready;
+      
+      // Clear existing notifications
+      const existingNotifications = await registration.getNotifications();
+      existingNotifications.forEach(notification => notification.close());
+
+      // Schedule new notifications for today's pills
+      const today = new Date();
+      const notifications = [];
+
+      pills.forEach(pill => {
+        const dayOfWeek = today.getDay();
+        if (pill.days.includes(dayOfWeek)) {
+          const [hours, minutes] = pill.time.split(':').map(Number);
+          const notificationTime = new Date();
+          notificationTime.setHours(hours, minutes, 0, 0);
+
+          // Only schedule if time hasn't passed today
+          if (notificationTime > new Date()) {
+            const timeUntilNotification = notificationTime.getTime() - new Date().getTime();
+            
+            setTimeout(async () => {
+              await registration.showNotification(`Time for ${pill.name}! 💊`, {
+                body: `Don't forget to take your ${pill.name}`,
+                icon: '/icon-192.png',
+                badge: '/icon-192.png',
+                tag: `pill-${pill.id}`,
+                requireInteraction: true,
+                actions: [
+                  {
+                    action: 'take_pill',
+                    title: 'Mark as Taken ✅'
+                  },
+                  {
+                    action: 'snooze',
+                    title: 'Remind me in 10 min ⏰'
+                  }
+                ],
+                data: {
+                  pillId: pill.id,
+                  pillName: pill.name
+                }
+              });
+            }, timeUntilNotification);
+
+            notifications.push({
+              pillId: pill.id,
+              pillName: pill.name,
+              scheduledTime: notificationTime.toLocaleTimeString()
+            });
+          }
+        }
+      });
+
+      setScheduledNotifications(notifications);
+      console.log('📅 Notifications scheduled:', notifications);
+    }
+  };
+
+  const testNotification = async () => {
+    if (notificationStatus === 'granted' && 'serviceWorker' in navigator) {
+      const registration = await navigator.serviceWorker.ready;
+      await registration.showNotification('Test Notification 🧪', {
+        body: 'This is a test notification from Simple Pill Reminder',
+        icon: '/icon-192.png',
+        tag: 'test',
+        actions: [
+          {
+            action: 'dismiss',
+            title: 'Dismiss'
+          }
+        ]
+      });
+    }
+  };
+
+  if (!('Notification' in window)) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-lg p-3">
+        <p className="text-red-700 text-sm">
+          🚫 Push notifications are not supported in this browser
+        </p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+      <h3 className="font-medium text-blue-900 mb-3">🔔 Push Notifications</h3>
+      
+      <div className="space-y-3">
+        <div className="flex items-center justify-between">
+          <span className="text-sm text-blue-700">
+            Status: <span className="font-medium capitalize">{notificationStatus}</span>
+          </span>
+          {notificationStatus === 'default' && (
+            <button
+              onClick={requestNotificationPermission}
+              className="px-3 py-1 bg-blue-500 text-white rounded-lg text-sm hover:bg-blue-600 transition-colors"
+            >
+              Enable Notifications
+            </button>
+          )}
+        </div>
+
+        {notificationStatus === 'granted' && (
+          <>
+            <div className="flex space-x-2">
+              <button
+                onClick={scheduleNotifications}
+                className="flex-1 px-3 py-2 bg-green-500 text-white rounded-lg text-sm hover:bg-green-600 transition-colors"
+              >
+                Schedule Today's Reminders
+              </button>
+              <button
+                onClick={testNotification}
+                className="px-3 py-2 bg-gray-500 text-white rounded-lg text-sm hover:bg-gray-600 transition-colors"
+              >
+                Test
+              </button>
+            </div>
+
+            {scheduledNotifications.length > 0 && (
+              <div className="bg-white rounded-lg p-2">
+                <p className="text-xs font-medium text-gray-700 mb-1">Scheduled for today:</p>
+                {scheduledNotifications.map((notif, index) => (
+                  <div key={index} className="text-xs text-gray-600">
+                    • {notif.pillName} at {notif.scheduledTime}
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {notificationStatus === 'denied' && (
+          <p className="text-xs text-red-600">
+            Notifications are blocked. Please enable them in your browser settings.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+};
+
 // AI Chat Component
 const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => {
   const [messages, setMessages] = useState([]);

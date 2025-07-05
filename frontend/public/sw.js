@@ -1,7 +1,7 @@
-// Enhanced Service Worker для PWA - Stable Version без AdSense ошибок
-const CACHE_NAME = 'pill-reminder-v4-stable';
-const STATIC_CACHE = 'pill-reminder-static-v4';
-const DYNAMIC_CACHE = 'pill-reminder-dynamic-v4';
+// Enhanced Service Worker для PWA - Personalized AI Version
+const CACHE_NAME = 'pill-reminder-v5-ai-personalized';
+const STATIC_CACHE = 'pill-reminder-static-v5';
+const DYNAMIC_CACHE = 'pill-reminder-dynamic-v5';
 
 // Файлы для кэширования
 const STATIC_FILES = [

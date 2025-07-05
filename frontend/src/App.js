@@ -54,8 +54,12 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
   const [sessionId, setSessionId] = useState('');
   const [chatType, setChatType] = useState('support'); // 'support', 'recommendation', 'general'
 
-  // Функция для сброса чата
+  // Функция для сброса чата с подтверждением
   const resetChat = async () => {
+    const confirmReset = window.confirm('Are you sure you want to reset the chat? This will clear all messages and start a new session.');
+    
+    if (!confirmReset) return;
+    
     setMessages([]);
     setCurrentMessage('');
     setLoading(false);

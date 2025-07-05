@@ -262,6 +262,18 @@ frontend:
         agent: "main"
         comment: "Обновил PWA до версии 1.3.0 'Personalized AI'. Изменил версии кеша Service Worker на v5-ai-personalized. Обновил описание для отражения новых ИИ возможностей с доступом к локальной базе данных."
 
+  - task: "Push Notifications and Language Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/App.js, frontend/src/aiAssistant.js, frontend/public/sw.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Added comprehensive push notification system with NotificationManager component in Settings. Created scheduling functions for medication reminders with snooze functionality. Fixed all AI text to English. Enhanced Service Worker with better notification handling including 10-minute snooze and final reminders. Added automatic notification scheduling when adding new medications."
+
   - task: "PWA Version Update to v1.4.0"
     implemented: true
     working: true

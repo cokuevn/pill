@@ -234,16 +234,38 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
       <div className="bg-white rounded-2xl w-full max-w-md h-[80vh] flex flex-col animate-slide-up">
         {/* Header */}
         <div className="flex justify-between items-center p-4 border-b">
-          <div>
+          <div className="flex-1">
             <h2 className="text-xl font-bold text-gray-900">🤖 AI Assistant</h2>
             <p className="text-sm text-gray-500">Ask me anything about your medications!</p>
           </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 text-2xl transition-colors"
-          >
-            ×
-          </button>
+          
+          {/* Action buttons */}
+          <div className="flex items-center space-x-2">
+            {messages.length > 0 && (
+              <>
+                <button
+                  onClick={backToStart}
+                  title="Back to start"
+                  className="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                >
+                  🏠
+                </button>
+                <button
+                  onClick={resetChat}
+                  title="Reset chat"
+                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                >
+                  🔄
+                </button>
+              </>
+            )}
+            <button
+              onClick={onClose}
+              className="p-2 text-gray-400 hover:text-gray-600 text-xl transition-colors"
+            >
+              ×
+            </button>
+          </div>
         </div>
 
         {/* Chat Type Selector */}

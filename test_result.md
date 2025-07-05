@@ -250,17 +250,17 @@ frontend:
         agent: "main"
         comment: "Создал полную систему персонализированного ИИ помощника. Добавлены методы аналитики в database.js для получения статистики приема, паттернов поведения, insights. Создан aiAssistant.js для генерации рекомендаций, психологической поддержки и мотивации. Обновлен backend для обработки персонализированных данных. ИИ теперь имеет доступ к локальной БД и может давать персонализированные советы."
 
-  - task: "PWA Version Update to v1.3.0"
+  - task: "Push Notifications and Language Fix"
     implemented: true
     working: true
-    file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"
+    file: "frontend/src/App.js, frontend/src/aiAssistant.js, frontend/public/sw.js"
     stuck_count: 0
-    priority: "medium"
-    needs_retesting: false
+    priority: "high"
+    needs_retesting: true
     status_history:
       - working: true
         agent: "main"
-        comment: "Обновил PWA до версии 1.3.0 'Personalized AI'. Изменил версии кеша Service Worker на v5-ai-personalized. Обновил описание для отражения новых ИИ возможностей с доступом к локальной базе данных."
+        comment: "Added comprehensive push notification system with NotificationManager component in Settings. Created scheduling functions for medication reminders with snooze functionality. Fixed all AI text to English. Enhanced Service Worker with better notification handling including 10-minute snooze and final reminders. Added automatic notification scheduling when adding new medications."
 
 metadata:
   created_by: "main_agent"

@@ -185,8 +185,8 @@ class AIAssistant {
       insights.push({
         type: 'concern',
         urgency: 'medium',
-        message: `Замечаю, что вы пропустили ${userContext.missedDoses} доз за последнее время. Хотите поговорить о том, что затрудняет прием лекарств?`,
-        suggestion: 'Давайте найдем решение вместе',
+        message: `I notice you've missed ${userContext.missedDoses} doses recently. Would you like to talk about what's making it difficult to take medications?`,
+        suggestion: 'Let\'s find a solution together',
         emotionalSupport: true
       });
     }
@@ -196,8 +196,8 @@ class AIAssistant {
       insights.push({
         type: 'support',
         urgency: 'high',
-        message: 'Понимаю, что иногда бывает сложно не забывать о лекарствах. Это нормально! Каждый новый день - это возможность начать заново.',
-        suggestion: 'Попробуйте связать прием лекарств с ежедневной привычкой',
+        message: 'I understand that sometimes it can be hard to remember medications. That\'s normal! Every new day is a chance to start fresh.',
+        suggestion: 'Try linking medication intake with a daily habit',
         emotionalSupport: true,
         motivational: this.getRandomMessage(this.supportMessages)
       });
@@ -208,8 +208,8 @@ class AIAssistant {
       insights.push({
         type: 'encouragement',
         urgency: 'positive',
-        message: `Прекрасно! ${userContext.consecutiveDays} дня подряд - это отличное начало привычки! 🌟`,
-        suggestion: 'Продолжайте, и скоро это станет автоматическим',
+        message: `Excellent! ${userContext.consecutiveDays} days in a row - that's a great start to building a habit! 🌟`,
+        suggestion: 'Keep going, and it will soon become automatic',
         emotionalSupport: true
       });
     }
@@ -219,8 +219,8 @@ class AIAssistant {
       insights.push({
         type: 'pattern',
         urgency: 'medium',
-        message: 'Замечаю, что в выходные прием лекарств становится менее регулярным. Это довольно обычная ситуация!',
-        suggestion: 'Установите дополнительные напоминания на выходные',
+        message: 'I notice that medication intake becomes less regular on weekends. This is quite common!',
+        suggestion: 'Set additional reminders for weekends',
         emotionalSupport: false
       });
     }

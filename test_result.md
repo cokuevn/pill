@@ -227,8 +227,6 @@ test_plan:
     - "AdSense Integration"
   test_all: false
   test_priority: "high_first"
-
-  - task: "PWA Version Update"
     implemented: true
     working: true
     file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"

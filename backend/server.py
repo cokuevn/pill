@@ -189,19 +189,38 @@ async def chat_with_ai(request: ChatRequest):
         # Generate session_id if not provided
         session_id = request.session_id or str(uuid.uuid4())
         
-        # Create chat instance
-        chat = create_chat_instance(session_id, request.message_type, request.user_medications)
+        # Create chat instance with personalized context
+        chat = create_chat_instance(
+            session_id, 
+            request.message_type, 
+            request.user_medications,
+            request.user_context  # Передаем персональный контекст
+        )
+        
+        # Создаем расширенное сообщение пользователя с контекстом
+        user_message_text = request.message
+        
+        # Добавляем информацию о рекомендациях и insights если есть
+        if request.recommendations:
+            user_message_text += f"\n\nПерсональные рекомендации на основе данных пользователя:\n"
+            for i, rec in enumerate(request.recommendations[:3], 1):  # Первые 3 рекомендации
+                user_message_text += f"{i}. {rec.get('title', '')}: {rec.get('message', '')}\n"
+        
+        if request.insights:
+            user_message_text += f"\n\nТекущие наблюдения:\n"
+            for insight in request.insights[:2]:  # Первые 2 наблюдения
+                user_message_text += f"• {insight.get('message', '')}\n"
         
         # Create user message
-        user_message = UserMessage(text=request.message)
+        user_message = UserMessage(text=user_message_text)
         
         # Get AI response
         ai_response = await chat.send_message(user_message)
         
-        # Save chat to database
+        # Save chat to database with extended context
         chat_record = ChatMessage(
             session_id=session_id,
-            user_message=request.message,
+            user_message=request.message,  # Сохраняем оригинальное сообщение
             ai_response=ai_response,
             message_type=request.message_type
         )

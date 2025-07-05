@@ -48,7 +48,7 @@ const PWAStatus = () => {
 };
 
 // AI Chat Component
-const AIChatModal = ({ isOpen, onClose, pills }) => {
+const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => {
   const [messages, setMessages] = useState([]);
   const [currentMessage, setCurrentMessage] = useState('');
   const [loading, setLoading] = useState(false);

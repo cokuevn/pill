@@ -92,7 +92,7 @@ self.addEventListener('notificationclick', (event) => {
   if (event.action === 'take_pill') {
     // Отметить таблетку как принятую
     event.waitUntil(
-      clients.matchAll({ type: 'window' }).then((clientList) => {
+      self.clients.matchAll({ type: 'window' }).then((clientList) => {
         if (clientList.length > 0) {
           const client = clientList[0];
           client.postMessage({

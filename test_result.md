@@ -175,10 +175,10 @@ frontend:
   - task: "React Error Screen Prevention"
     implemented: true
     working: true
-    file: "frontend/src/App.js, frontend/src/admob.js"
-    stuck_count: 0
+    file: "frontend/src/App.js, frontend/src/admob.js, frontend/public/index.html"
+    stuck_count: 1
     priority: "high"
-    needs_retesting: false
+    needs_retesting: true
     status_history:
       - working: false
         agent: "user"
@@ -189,6 +189,12 @@ frontend:
       - working: true
         agent: "testing"
         comment: "Выполнил 5 последовательных перезагрузок страницы. Черный экран с ошибками React больше не появляется. Глобальный обработчик ошибок успешно перехватывает ошибки AdSense и предотвращает появление экрана ошибок React. Ошибки AdSense отображаются в консоли, но не влияют на работу приложения."
+      - working: false
+        agent: "user"
+        comment: "При первой секунде все еще мигает черный экран ошибок при загрузке"
+      - working: true
+        agent: "main"
+        comment: "Добавил обработчик ошибок прямо в HTML (до загрузки React), добавил обработку TagError, отложил инициализацию AdSense на 2 секунды"
         
   - task: "Core App Functionality"
     implemented: true

@@ -405,6 +405,24 @@ const AIChatModal = ({ isOpen, onClose, pills }) => {
 
         {/* Input */}
         <div className="p-4 border-t">
+          {/* Chat control buttons when there are messages */}
+          {messages.length > 0 && (
+            <div className="flex space-x-2 mb-3">
+              <button
+                onClick={backToStart}
+                className="flex-1 px-3 py-2 bg-blue-50 text-blue-600 rounded-lg hover:bg-blue-100 transition-colors text-sm font-medium"
+              >
+                🏠 Back to Start
+              </button>
+              <button
+                onClick={resetChat}
+                className="flex-1 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-sm font-medium"
+              >
+                🔄 Reset Chat
+              </button>
+            </div>
+          )}
+          
           <div className="flex space-x-2">
             <input
               type="text"

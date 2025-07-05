@@ -285,6 +285,253 @@ class PillReminderDB {
     }
   }
 
+  // ========== НОВЫЕ МЕТОДЫ ДЛЯ ИИ АНАЛИТИКИ ==========
+  
+  // Получение статистики приема за период
+  async getMedicationStats(days = 30) {
+    try {
+      const pills = await this.getPills();
+      const allTaken = await this.getAll('taken_history');
+      
+      const cutoffDate = new Date();
+      cutoffDate.setDate(cutoffDate.getDate() - days);
+      
+      const recentHistory = allTaken.filter(record => 
+        new Date(record.takenAt) >= cutoffDate
+      );
+      
+      const stats = {
+        totalPills: pills.length,
+        totalTaken: recentHistory.length,
+        pillStats: [],
+        adherenceRate: 0,
+        missedDoses: 0,
+        streaks: {},
+        timePatterns: {},
+        mostActiveDay: null,
+        concerns: []
+      };
+      
+      // Статистика по каждому лекарству
+      pills.forEach(pill => {
+        const pillHistory = recentHistory.filter(record => record.pillId === pill.id);
+        const expectedDoses = this.calculateExpectedDoses(pill, days);
+        const adherenceRate = expectedDoses > 0 ? (pillHistory.length / expectedDoses) * 100 : 0;
+        
+        stats.pillStats.push({
+          pill: pill,
+          taken: pillHistory.length,
+          expected: expectedDoses,
+          adherenceRate: Math.round(adherenceRate),
+          lastTaken: pillHistory.length > 0 ? pillHistory[pillHistory.length - 1].takenAt : null,
+          missedDays: expectedDoses - pillHistory.length
+        });
+        
+        if (adherenceRate < 80) {
+          stats.concerns.push(`Low adherence for ${pill.name}: ${Math.round(adherenceRate)}%`);
+        }
+      });
+      
+      // Общий процент соблюдения
+      const totalExpected = stats.pillStats.reduce((sum, stat) => sum + stat.expected, 0);
+      stats.adherenceRate = totalExpected > 0 ? Math.round((recentHistory.length / totalExpected) * 100) : 0;
+      stats.missedDoses = totalExpected - recentHistory.length;
+      
+      return stats;
+    } catch (error) {
+      console.error('Error getting medication stats:', error);
+      return null;
+    }
+  }
+  
+  // Расчет ожидаемых доз для лекарства за период
+  calculateExpectedDoses(pill, days) {
+    const daysInWeek = 7;
+    const weeksInPeriod = Math.ceil(days / daysInWeek);
+    const dosesPerWeek = pill.days.length;
+    return weeksInPeriod * dosesPerWeek;
+  }
+  
+  // Получение паттернов приема
+  async getMedicationPatterns() {
+    try {
+      const allTaken = await this.getAll('taken_history');
+      const pills = await this.getPills();
+      
+      const patterns = {
+        timeOfDay: {},
+        dayOfWeek: {},
+        consistency: {},
+        delays: []
+      };
+      
+      allTaken.forEach(record => {
+        const takenTime = new Date(record.takenAt);
+        const hour = takenTime.getHours();
+        const dayOfWeek = takenTime.getDay();
+        
+        // Паттерны времени дня
+        const timeSlot = this.getTimeSlot(hour);
+        patterns.timeOfDay[timeSlot] = (patterns.timeOfDay[timeSlot] || 0) + 1;
+        
+        // Паттерны дня недели
+        const dayName = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'][dayOfWeek];
+        patterns.dayOfWeek[dayName] = (patterns.dayOfWeek[dayName] || 0) + 1;
+        
+        // Проверка задержек (если есть запланированное время)
+        const pill = pills.find(p => p.id === record.pillId);
+        if (pill) {
+          const [plannedHour, plannedMinute] = pill.time.split(':').map(Number);
+          const plannedTime = new Date(takenTime);
+          plannedTime.setHours(plannedHour, plannedMinute, 0, 0);
+          
+          const delayMinutes = (takenTime - plannedTime) / (1000 * 60);
+          if (Math.abs(delayMinutes) > 30) { // Задержка больше 30 минут
+            patterns.delays.push({
+              pillName: pill.name,
+              planned: pill.time,
+              actual: takenTime.toTimeString().slice(0, 5),
+              delayMinutes: Math.round(delayMinutes)
+            });
+          }
+        }
+      });
+      
+      return patterns;
+    } catch (error) {
+      console.error('Error getting medication patterns:', error);
+      return {};
+    }
+  }
+  
+  // Определение временного слота
+  getTimeSlot(hour) {
+    if (hour >= 6 && hour < 12) return 'Morning';
+    if (hour >= 12 && hour < 17) return 'Afternoon';
+    if (hour >= 17 && hour < 21) return 'Evening';
+    return 'Night';
+  }
+  
+  // Получение недавних проблем и достижений
+  async getRecentInsights(days = 7) {
+    try {
+      const stats = await this.getMedicationStats(days);
+      const patterns = await this.getMedicationPatterns();
+      
+      const insights = {
+        achievements: [],
+        concerns: [],
+        suggestions: [],
+        motivation: []
+      };
+      
+      // Достижения
+      if (stats.adherenceRate >= 90) {
+        insights.achievements.push(`Excellent medication adherence: ${stats.adherenceRate}%! 🎉`);
+      } else if (stats.adherenceRate >= 80) {
+        insights.achievements.push(`Good adherence rate: ${stats.adherenceRate}% 👍`);
+      }
+      
+      if (patterns.delays.length === 0) {
+        insights.achievements.push('Perfect timing on all medications! ⏰');
+      }
+      
+      // Проблемы
+      if (stats.adherenceRate < 70) {
+        insights.concerns.push(`Low adherence rate: ${stats.adherenceRate}%. Let's work on improving this.`);
+      }
+      
+      if (stats.missedDoses > 5) {
+        insights.concerns.push(`${stats.missedDoses} missed doses in the last ${days} days.`);
+      }
+      
+      if (patterns.delays.length > 3) {
+        insights.concerns.push(`Frequent timing delays. Consider adjusting your schedule.`);
+      }
+      
+      // Предложения
+      if (patterns.timeOfDay.Morning > patterns.timeOfDay.Evening) {
+        insights.suggestions.push('You seem to be more consistent with morning medications. Consider moving other meds to morning if possible.');
+      }
+      
+      if (patterns.dayOfWeek.Mon < patterns.dayOfWeek.Fri) {
+        insights.suggestions.push('Weekends seem challenging for medication adherence. Set extra reminders for Saturday and Sunday.');
+      }
+      
+      // Мотивация
+      const consecutiveDays = await this.getConsecutiveDays();
+      if (consecutiveDays > 0) {
+        insights.motivation.push(`You're on a ${consecutiveDays}-day streak! Keep it up! 🔥`);
+      }
+      
+      return insights;
+    } catch (error) {
+      console.error('Error getting insights:', error);
+      return { achievements: [], concerns: [], suggestions: [], motivation: [] };
+    }
+  }
+  
+  // Подсчет последовательных дней приема
+  async getConsecutiveDays() {
+    try {
+      const allTaken = await this.getAll('taken_history');
+      const pills = await this.getPills();
+      
+      if (pills.length === 0) return 0;
+      
+      let consecutiveDays = 0;
+      const today = new Date();
+      
+      for (let i = 0; i < 30; i++) { // Проверяем последние 30 дней
+        const checkDate = new Date(today);
+        checkDate.setDate(today.getDate() - i);
+        const dateString = checkDate.toDateString();
+        
+        const dayHistory = allTaken.filter(record => record.date === dateString);
+        
+        // Проверяем, были ли приняты все запланированные лекарства на этот день
+        const requiredToday = pills.filter(pill => {
+          const dayOfWeek = checkDate.getDay();
+          return pill.days.includes(dayOfWeek);
+        });
+        
+        const takenToday = dayHistory.length;
+        const requiredCount = requiredToday.length;
+        
+        if (takenToday >= requiredCount && requiredCount > 0) {
+          consecutiveDays++;
+        } else {
+          break; // Прерываем при первом пропуске
+        }
+      }
+      
+      return consecutiveDays;
+    } catch (error) {
+      console.error('Error calculating consecutive days:', error);
+      return 0;
+    }
+  }
+  
+  // Сохранение пользовательских предпочтений и настроений
+  async saveUserMood(mood, notes = '') {
+    try {
+      const moodRecord = {
+        id: Date.now(),
+        mood: mood, // 1-5 scale or 'great', 'good', 'okay', 'bad', 'terrible'
+        notes: notes,
+        date: new Date().toDateString(),
+        timestamp: new Date().toISOString()
+      };
+      
+      await this.put('user_data', moodRecord);
+      console.log('💭 User mood saved');
+      return true;
+    } catch (error) {
+      console.error('Error saving user mood:', error);
+      return false;
+    }
+  }
+
   // Методы для очистки данных
   async clearAllData() {
     try {

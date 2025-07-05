@@ -53,6 +53,10 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     message_type: str = Field(default="support")  # "support", "recommendation", "general"
     user_medications: Optional[List[Dict[str, Any]]] = None
+    # Новые поля для персонализации
+    user_context: Optional[Dict[str, Any]] = None
+    recommendations: Optional[List[Dict[str, Any]]] = None
+    insights: Optional[List[Dict[str, Any]]] = None
 
 class ChatResponse(BaseModel):
     response: str

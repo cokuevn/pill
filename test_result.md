@@ -250,6 +250,18 @@ frontend:
         agent: "main"
         comment: "Создал полную систему персонализированного ИИ помощника. Добавлены методы аналитики в database.js для получения статистики приема, паттернов поведения, insights. Создан aiAssistant.js для генерации рекомендаций, психологической поддержки и мотивации. Обновлен backend для обработки персонализированных данных. ИИ теперь имеет доступ к локальной БД и может давать персонализированные советы."
 
+  - task: "PWA Version Update to v1.3.0"
+    implemented: true
+    working: true
+    file: "frontend/public/manifest.json, frontend/public/sw.js, frontend/package.json, frontend/public/index.html"
+    stuck_count: 0
+    priority: "medium"
+    needs_retesting: false
+    status_history:
+      - working: true
+        agent: "main"
+        comment: "Обновил PWA до версии 1.3.0 'Personalized AI'. Изменил версии кеша Service Worker на v5-ai-personalized. Обновил описание для отражения новых ИИ возможностей с доступом к локальной базе данных."
+
   - task: "Push Notifications and Language Fix"
     implemented: true
     working: true

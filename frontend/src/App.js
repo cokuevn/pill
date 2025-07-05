@@ -809,11 +809,15 @@ function App() {
         console.log('Notification permission:', permission);
       }
 
-      // Initialize AdMob/AdSense with real IDs - ВРЕМЕННО ОТКЛЮЧЕНО до одобрения Google
-      // TODO: Включить после одобрения AdSense аккаунта
-      console.log('📢 AdSense временно отключен до одобрения Google аккаунта');
+      // Initialize AdMob/AdSense with real IDs - управляется переменной окружения
+      const isAdSenseEnabled = process.env.REACT_APP_ADSENSE_ENABLED === 'true';
       
-      /* ЗАКОММЕНТИРОВАНО до одобрения AdSense:
+      if (!isAdSenseEnabled) {
+        console.log('📢 AdSense отключен (REACT_APP_ADSENSE_ENABLED=false). Включите после одобрения Google аккаунта.');
+        return;
+      }
+      
+      // AdSense код (выполняется только если REACT_APP_ADSENSE_ENABLED=true)
       setTimeout(async () => {
         try {
           const adConfig = {
@@ -848,7 +852,7 @@ function App() {
                   }, 2000);
                 }
               } catch (error) {
-                console.warn('⚠️ Banner ad failed (expected until approved):', error.message);
+                console.warn('⚠️ Banner ad failed:', error.message);
                 // Show fallback on error
                 const fallback = document.getElementById('ad-fallback');
                 if (fallback) {
@@ -858,10 +862,9 @@ function App() {
             }, 3000);
           }
         } catch (error) {
-          console.warn('⚠️ AdMob initialization failed (expected until approved):', error.message);
+          console.warn('⚠️ AdMob initialization failed:', error.message);
         }
-      }, 2000); // Задержка 2 секунды для полной загрузки приложения
-      */
+      }, 1000);
     };
 
     initServices();

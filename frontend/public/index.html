@@ -36,7 +36,9 @@
                     (event.error.message?.includes('adsbygoogle') || 
                      event.error.message?.includes('googlesyndication') ||
                      event.error.message?.includes('enable_page_level_ads') ||
-                     event.error.stack?.includes('adsbygoogle'))) {
+                     event.error.message?.includes('TagError') ||
+                     event.error.stack?.includes('adsbygoogle') ||
+                     event.error.stack?.includes('googlesyndication'))) {
                     console.warn('⚠️ AdSense error caught early (expected until approved):', event.error.message);
                     event.preventDefault(); // Предотвращаем React error screen
                     event.stopPropagation();
@@ -50,7 +52,8 @@
                 if (event.reason && 
                     (event.reason.message?.includes('adsbygoogle') || 
                      event.reason.message?.includes('googlesyndication') ||
-                     event.reason.message?.includes('enable_page_level_ads'))) {
+                     event.reason.message?.includes('enable_page_level_ads') ||
+                     event.reason.message?.includes('TagError'))) {
                     console.warn('⚠️ AdSense promise rejection caught early (expected until approved):', event.reason.message);
                     event.preventDefault(); // Предотвращаем React error screen
                     return true;

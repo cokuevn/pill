@@ -57,34 +57,42 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
 
   // Функция для сброса чата с подтверждением
   const resetChat = async () => {
-    const confirmReset = window.confirm('Are you sure you want to reset the chat? This will clear all messages and start a new session.');
-    
-    if (!confirmReset) return;
-    
-    setMessages([]);
-    setCurrentMessage('');
-    setLoading(false);
-    
-    // Создаем новую сессию при сбросе
-    try {
-      const newSession = `session_${Date.now()}`;
-      await storage.setAISessionId(newSession);
-      setSessionId(newSession);
-      console.log('🔄 Chat reset with new session:', newSession);
-    } catch (error) {
-      console.error('❌ Error resetting session:', error);
-      // Fallback to local session
-      const fallbackSession = `session_${Date.now()}`;
-      setSessionId(fallbackSession);
+    if (onResetChat) {
+      onResetChat();
+    } else {
+      const confirmReset = window.confirm('Are you sure you want to reset the chat? This will clear all messages and start a new session.');
+      
+      if (!confirmReset) return;
+      
+      setMessages([]);
+      setCurrentMessage('');
+      setLoading(false);
+      
+      // Создаем новую сессию при сбросе
+      try {
+        const newSession = `session_${Date.now()}`;
+        await storage.setAISessionId(newSession);
+        setSessionId(newSession);
+        console.log('🔄 Chat reset with new session:', newSession);
+      } catch (error) {
+        console.error('❌ Error resetting session:', error);
+        // Fallback to local session
+        const fallbackSession = `session_${Date.now()}`;
+        setSessionId(fallbackSession);
+      }
     }
   };
 
   // Функция для возврата к начальной странице
   const backToStart = () => {
-    setMessages([]);
-    setCurrentMessage('');
-    setLoading(false);
-    // Сессия остается та же, только очищаем интерфейс
+    if (onBackToStart) {
+      onBackToStart();
+    } else {
+      setMessages([]);
+      setCurrentMessage('');
+      setLoading(false);
+      // Сессия остается та же, только очищаем интерфейс
+    }
   };
 
   useEffect(() => {

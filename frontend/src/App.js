@@ -950,8 +950,9 @@ const PillItem = ({ pill, isTaken, onTake, onDelete }) => {
 };
 
 // Settings Modal Component
-const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
+const SettingsModal = ({ isOpen, onClose, onClearData, pillCount, pills }) => {
   const [showConfirm, setShowConfirm] = useState(false);
+  const [notificationPermission, setNotificationPermission] = useState('default');
 
   const handleClearData = () => {
     if (showConfirm) {
@@ -963,11 +964,15 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
     }
   };
 
+  const handleNotificationPermission = (permission) => {
+    setNotificationPermission(permission);
+  };
+
   if (!isOpen) return null;
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 animate-fade-in">
-      <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-slide-up">
+      <div className="bg-white rounded-2xl p-6 w-full max-w-md animate-slide-up max-h-[90vh] overflow-y-auto">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-xl font-bold text-gray-900">⚙️ Settings</h2>
           <button
@@ -979,15 +984,21 @@ const SettingsModal = ({ isOpen, onClose, onClearData, pillCount }) => {
         </div>
 
         <div className="space-y-6">
+          {/* Push Notifications */}
+          <NotificationManager 
+            pills={pills || []} 
+            onRequestPermission={handleNotificationPermission}
+          />
+
           {/* App Info */}
           <div className="bg-gray-50 rounded-xl p-4">
             <h3 className="font-medium text-gray-900 mb-2">App Information</h3>
             <div className="space-y-1 text-sm text-gray-600">
               <p>Total Medications: {pillCount}</p>
-              <p>Version: 1.1.0 (Production)</p>
+              <p>Version: 1.3.0 (Personalized AI)</p>
               <p>Storage: IndexedDB (offline-ready)</p>
               <p>AI: GPT-4o powered assistant</p>
-              <p>Ads: Live AdMob Integration ✅</p>
+              <p>Notifications: {notificationPermission === 'granted' ? 'Enabled ✅' : 'Disabled ❌'}</p>
             </div>
           </div>
 

@@ -9,7 +9,7 @@
 4. Configure:
    - **Name**: `pill-reminder-backend`
    - **Environment**: `Python 3`
-   - **Build Command**: `pip install -r requirements.txt --extra-index-url https://d33sy5i8bnduwe.cloudfront.net/simple/`
+   - **Build Command**: `pip install -r requirements.txt`
    - **Start Command**: `uvicorn server:app --host 0.0.0.0 --port $PORT`
    - **Root Directory**: `backend`
 

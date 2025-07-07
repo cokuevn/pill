@@ -223,11 +223,8 @@ async def chat_with_ai(request: ChatRequest):
             for insight in request.insights[:2]:  # Первые 2 наблюдения
                 user_message_text += f"• {insight.get('message', '')}\n"
         
-        # Create user message
-        user_message = UserMessage(text=user_message_text)
-        
         # Get AI response
-        ai_response = await chat.send_message(user_message)
+        ai_response = await chat.send_message(user_message_text)
         
         # Save chat to database with extended context
         chat_record = ChatMessage(

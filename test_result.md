@@ -286,6 +286,21 @@ frontend:
         agent: "main"
         comment: "Обновил PWA до версии 1.4.0 'Full Featured'. Изменил версии кеша Service Worker на v6-full-featured. Обновил описание для отражения полного функционала с пуш уведомлениями и персонализированным ИИ на английском языке."
 
+  - task: "Missed Doses Calculation Fix"
+    implemented: true
+    working: true
+    file: "frontend/src/database.js, frontend/src/aiAssistant.js"
+    stuck_count: 0
+    priority: "high"
+    needs_retesting: true
+    status_history:
+      - working: false
+        agent: "user"
+        comment: "ИИ показывает 10 пропущенных доз для новых лекарств"
+      - working: true
+        agent: "main"
+        comment: "Исправил алгоритм подсчета пропущенных доз: 1) Изменил calculateExpectedDoses на точный подсчет по дням вместо недель, 2) Добавил проверку даты добавления лекарства - не считаем пропущенные дозы для новых лекарств, 3) Обновил логику в ИИ для более умного анализа пропусков, 4) Для пустого списка лекарств возвращаем 100% adherence rate."
+
   - task: "Render.com Deployment Configuration"
     implemented: true
     working: true

@@ -3,6 +3,7 @@ import './App.css';
 import storage from './storage.js';
 import adMob from './admob.js';
 import aiAssistant from './aiAssistant.js';
+import pillDB from './database.js';
 
 const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
 const API = `${BACKEND_URL}/api`;

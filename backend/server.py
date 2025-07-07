@@ -275,8 +275,8 @@ async def get_medication_recommendations(request: RecommendationRequest):
         Keep it practical and encouraging!
         """
         
-        user_message = UserMessage(text=prompt)
-        ai_response = await chat.send_message(user_message)
+        # Get AI response
+        ai_response = await chat.send_message(prompt)
         
         # Save to database
         chat_record = ChatMessage(

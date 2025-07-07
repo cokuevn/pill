@@ -86,8 +86,33 @@ client = AsyncIOMotorClient(
 )
 db = client[db_name]
 
+from contextlib import asynccontextmanager
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Startup
+    logger.info("🚀 Starting Pill Reminder API...")
+    try:
+        # Test database connection
+        await db.list_collection_names()
+        logger.info("✅ Database connected successfully")
+    except Exception as e:
+        logger.error(f"❌ Database connection failed: {e}")
+    
+    yield
+    
+    # Shutdown
+    logger.info("🔄 Shutting down Pill Reminder API...")
+    client.close()
+    logger.info("✅ Database connection closed")
+
 # Create the main app without a prefix
-app = FastAPI()
+app = FastAPI(
+    title="Simple Pill Reminder API",
+    description="AI-powered medication reminder API with personalized insights",
+    version="1.4.0",
+    lifespan=lifespan
+)
 
 # Create a router with the /api prefix
 api_router = APIRouter(prefix="/api")

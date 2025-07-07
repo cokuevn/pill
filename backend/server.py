@@ -1,6 +1,5 @@
 from fastapi import FastAPI, APIRouter, HTTPException
-from dotenv import load_dotenv
-from starlette.middleware.cors import CORSMiddleware
+from fastapi.middleware.cors import CORSMiddleware
 from motor.motor_asyncio import AsyncIOMotorClient
 import os
 import logging
@@ -9,16 +8,70 @@ from pydantic import BaseModel, Field
 from typing import List, Optional, Dict, Any
 import uuid
 from datetime import datetime
+import requests
+import json
 
 # Setup logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# Import emergent integrations for LLM
-from emergentintegrations.llm.chat import LlmChat, UserMessage
+# Load environment variables
+from dotenv import load_dotenv
 
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
+
+# OpenAI Configuration
+OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
+
+if not OPENAI_API_KEY:
+    raise ValueError("OPENAI_API_KEY environment variable is required")
+
+# Simple OpenAI Chat Integration
+class OpenAIChat:
+    def __init__(self, api_key: str, model: str = "gpt-4o", system_message: str = ""):
+        self.api_key = api_key
+        self.model = model
+        self.system_message = system_message
+        self.headers = {
+            "Authorization": f"Bearer {api_key}",
+            "Content-Type": "application/json"
+        }
+        
+    async def send_message(self, user_message: str) -> str:
+        try:
+            messages = []
+            if self.system_message:
+                messages.append({"role": "system", "content": self.system_message})
+            messages.append({"role": "user", "content": user_message})
+            
+            payload = {
+                "model": self.model,
+                "messages": messages,
+                "max_tokens": 1000,
+                "temperature": 0.7
+            }
+            
+            response = requests.post(
+                "https://api.openai.com/v1/chat/completions",
+                headers=self.headers,
+                json=payload,
+                timeout=30
+            )
+            
+            if response.status_code != 200:
+                logger.error(f"OpenAI API error: {response.status_code} - {response.text}")
+                raise HTTPException(status_code=500, detail="AI service unavailable")
+                
+            result = response.json()
+            return result['choices'][0]['message']['content']
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"OpenAI request failed: {str(e)}")
+            raise HTTPException(status_code=500, detail="AI service error")
+        except Exception as e:
+            logger.error(f"OpenAI processing error: {str(e)}")
+            raise HTTPException(status_code=500, detail="AI processing error")
 
 # MongoDB connection for Atlas
 mongo_url = os.environ['MONGO_URL']
@@ -32,9 +85,6 @@ client = AsyncIOMotorClient(
     retryWrites=True
 )
 db = client[db_name]
-
-# OpenAI Configuration
-OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')
 
 # Create the main app without a prefix
 app = FastAPI()
@@ -65,7 +115,6 @@ class ChatRequest(BaseModel):
     session_id: Optional[str] = None
     message_type: str = Field(default="support")  # "support", "recommendation", "general"
     user_medications: Optional[List[Dict[str, Any]]] = None
-    # Новые поля для персонализации
     user_context: Optional[Dict[str, Any]] = None
     recommendations: Optional[List[Dict[str, Any]]] = None
     insights: Optional[List[Dict[str, Any]]] = None
@@ -98,7 +147,6 @@ def get_system_message(message_type: str, medications: Optional[List[Dict]] = No
     IMPORTANT: You have access to user's personal medication data and can provide personalized insights.
     """
     
-    # Добавляем персональный контекст если доступен
     personal_context = ""
     if user_context:
         adherence_rate = user_context.get('adherence_rate', 0)
@@ -165,15 +213,15 @@ def get_system_message(message_type: str, medications: Optional[List[Dict]] = No
     
     return base_prompt
 
-# Initialize LLM Chat
-def create_chat_instance(session_id: str, message_type: str, medications: Optional[List[Dict]] = None, user_context: Optional[Dict] = None) -> LlmChat:
+# Initialize OpenAI Chat
+def create_chat_instance(session_id: str, message_type: str, medications: Optional[List[Dict]] = None, user_context: Optional[Dict] = None) -> OpenAIChat:
     system_message = get_system_message(message_type, medications, user_context)
     
-    chat = LlmChat(
+    chat = OpenAIChat(
         api_key=OPENAI_API_KEY,
-        session_id=session_id,
+        model="gpt-4o",
         system_message=system_message
-    ).with_model("openai", "gpt-4o").with_max_tokens(1000)
+    )
     
     return chat
 
@@ -206,21 +254,21 @@ async def chat_with_ai(request: ChatRequest):
             session_id, 
             request.message_type, 
             request.user_medications,
-            request.user_context  # Передаем персональный контекст
+            request.user_context
         )
         
-        # Создаем расширенное сообщение пользователя с контекстом
+        # Create extended user message with context
         user_message_text = request.message
         
-        # Добавляем информацию о рекомендациях и insights если есть
+        # Add recommendations and insights if available
         if request.recommendations:
-            user_message_text += f"\n\nПерсональные рекомендации на основе данных пользователя:\n"
-            for i, rec in enumerate(request.recommendations[:3], 1):  # Первые 3 рекомендации
+            user_message_text += f"\n\nPersonal recommendations based on user data:\n"
+            for i, rec in enumerate(request.recommendations[:3], 1):
                 user_message_text += f"{i}. {rec.get('title', '')}: {rec.get('message', '')}\n"
         
         if request.insights:
-            user_message_text += f"\n\nТекущие наблюдения:\n"
-            for insight in request.insights[:2]:  # Первые 2 наблюдения
+            user_message_text += f"\n\nCurrent observations:\n"
+            for insight in request.insights[:2]:
                 user_message_text += f"• {insight.get('message', '')}\n"
         
         # Get AI response
@@ -229,7 +277,7 @@ async def chat_with_ai(request: ChatRequest):
         # Save chat to database with extended context
         chat_record = ChatMessage(
             session_id=session_id,
-            user_message=request.message,  # Сохраняем оригинальное сообщение
+            user_message=request.message,
             ai_response=ai_response,
             message_type=request.message_type
         )

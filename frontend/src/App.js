@@ -412,7 +412,11 @@ const AIChatModal = ({ isOpen, onClose, pills, onResetChat, onBackToStart }) => 
       setMessages(prev => [...prev, { type: 'ai', content: aiResponse }]);
       
       // Сохраняем сообщение в локальную БД
-      await storage.database.saveAIMessage(sessionId, userMessage, aiResponse, chatType);
+      try {
+        await pillDB.saveAIMessage(sessionId, userMessage, aiResponse, chatType);
+      } catch (saveError) {
+        console.warn('Could not save AI message to IndexedDB:', saveError);
+      }
       
     } catch (error) {
       console.error('AI Chat error:', error);

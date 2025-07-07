@@ -390,8 +390,13 @@ app.include_router(api_router)
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
-    allow_origins=["*"],
-    allow_methods=["*"],
+    allow_origins=[
+        "https://pill-c93d.onrender.com",  # Render frontend
+        "http://localhost:3000",           # Local development
+        "https://localhost:3000",          # Local development HTTPS
+        "*"                                # Allow all origins for development
+    ],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 

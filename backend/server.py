@@ -20,10 +20,18 @@ from emergentintegrations.llm.chat import LlmChat, UserMessage
 ROOT_DIR = Path(__file__).parent
 load_dotenv(ROOT_DIR / '.env')
 
-# MongoDB connection
+# MongoDB connection for Atlas
 mongo_url = os.environ['MONGO_URL']
-client = AsyncIOMotorClient(mongo_url)
-db = client[os.environ['DB_NAME']]
+db_name = os.environ.get('DB_NAME', 'pill_reminder')
+
+# Configure MongoDB client for Atlas
+client = AsyncIOMotorClient(
+    mongo_url,
+    tlsAllowInvalidCertificates=True,
+    maxPoolSize=10,
+    retryWrites=True
+)
+db = client[db_name]
 
 # OpenAI Configuration
 OPENAI_API_KEY = os.environ.get('OPENAI_API_KEY')

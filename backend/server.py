@@ -395,6 +395,25 @@ async def get_app_help():
 # Include the router in the main app
 app.include_router(api_router)
 
+# Health check endpoint for Render
+@app.get("/")
+async def root():
+    return {"message": "Simple Pill Reminder API", "status": "running", "version": "1.4.0"}
+
+@app.get("/health")
+async def health_check():
+    try:
+        # Test database connection
+        await db.list_collection_names()
+        return {
+            "status": "healthy",
+            "database": "connected",
+            "timestamp": datetime.utcnow().isoformat()
+        }
+    except Exception as e:
+        logger.error(f"Health check failed: {str(e)}")
+        raise HTTPException(status_code=503, detail="Service unavailable")
+
 app.add_middleware(
     CORSMiddleware,
     allow_credentials=True,
